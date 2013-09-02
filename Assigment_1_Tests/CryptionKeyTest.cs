@@ -11,13 +11,14 @@ namespace Assigment_1_Tests
         [SetUp]
         public void Init()
         {
-            _cryptionKey = new CryptionKey("1isAKey");
+            _cryptionKey = new CryptionKey();
         }
 
         [Test]
         public void CheckIfKeyIsSet()
         {
-            Assert.AreEqual(_cryptionKey.Key, "1isAKey");
+            _cryptionKey.Key = "1isAKey";
+            Assert.AreEqual(_cryptionKey.Key, "00110001011010010111001101000001010010110110010101111001");
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -9,54 +9,59 @@ namespace Models
     {
         public int BlockSize { get { return 64; } }
 
-        public List<string> SplitBlockIntoStrings(string inputBlock)
+        public string[] SplitBlockIntoStrings(string inputBlock)
         {
             if (string.IsNullOrEmpty(inputBlock))
                 throw new NullReferenceException("InputBlock is null or empty");
 
             if (inputBlock.Length > BlockSize/8)
                 throw new Exception("inputBlock length is too long.");
-
-            var blocks = new List<string>();
-
-            if (inputBlock.Length <= (BlockSize/8)/2)
-                blocks.Add(inputBlock);
+            var binarys = ConvertStringToBinaryString(inputBlock);
+            string[] blocks;
+            if (binarys.Length <= BlockSize/2)
+            {
+                blocks = new string[1];
+                blocks[0] = binarys;
+            }
             else
             {
-                blocks.Add(inputBlock.Substring(0,1));
-                blocks.Add(inputBlock.Substring(1,2));
+                blocks = new string[2];
+                blocks[0] = binarys.Substring(0, BlockSize/2 -1);
+                blocks[1] = binarys.Substring(BlockSize / 2, binarys.Length - BlockSize / 2 -1);
+                //make sure block is 32 bits long.
+                blocks[1] = blocks[1].PadRight(BlockSize/2, '0');
             }
             return blocks;
         }
 
-        public byte[] ConvertStringToBitArray(string intputString)
+        public string ConvertSingleLetterToBinaryString(char inputChar)
         {
-            if(string.IsNullOrEmpty(intputString))
-                throw new NullReferenceException("inputString is null or empty");
-            var binary = Encoding.UTF8.GetBytes(intputString);
-            if (binary.Count() < 32)
+            string inputLetter = inputChar.ToString(CultureInfo.InvariantCulture);
+            if (string.IsNullOrEmpty(inputLetter))
+                throw new NullReferenceException("inputLetter is null or empty");
+            var byteArray = Encoding.UTF8.GetBytes(inputLetter);
+            byteArray= byteArray.Reverse().ToArray();
+            var sb = new StringBuilder();
+            foreach (var b in byteArray)
             {
-                binary = addPaddin(binary);
+                sb.Append(Convert.ToString(b, 2));
             }
-            return binary;
+            var binarystring = sb.ToString();
+            return binarystring.PadLeft(8, '0');
         }
 
-        private byte[] addPaddin(byte[] binaries)
+        public string ConvertStringToBinaryString(string inputString)
         {
-            var tmpArray = new byte[32];
-            if (binaries == null || binaries.Count() <= 0)
-                return tmpArray;
-            for (var i = 0; i < binaries.Length; i++)
+            if (string.IsNullOrEmpty(inputString))
+                throw new NullReferenceException("inputString is null or empty");
+
+            var sb = new StringBuilder();
+            foreach (char c in inputString)
             {
-                tmpArray[i] = binaries[i];
+                sb.Append(ConvertSingleLetterToBinaryString(c));
             }
 
-            for (var i = binaries.Length; i <= 32; i++)
-            {
-                tmpArray[i] = 0;
-            }
-
-            return tmpArray;
+            return sb.ToString().PadLeft(inputString.Length, '0');
         }
     }
 }

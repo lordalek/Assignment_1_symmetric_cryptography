@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Models;
 using NUnit.Framework;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
@@ -18,72 +17,66 @@ namespace Assigment_1_Tests
         [Test]
         public void Insert32bitString_expect1block()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("abcd").Count == 1);
+            Assert.IsTrue(_block.SplitBlockIntoStrings("abcd").Length == 1);
         }
         [Test]
         public void Insert40bitString_expect2blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("abcde").Count == 2);
+            Assert.IsTrue(_block.SplitBlockIntoStrings("abcde").Length == 2);
         }
 
         [Test]
         public void Insert48bitString_expect2blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("abcdef").Count == 2);
+            Assert.IsTrue(_block.SplitBlockIntoStrings("abcdef").Length == 2);
         }
 
         [Test]
         public void Insert56bitString_expect2blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("abc123").Count == 2);
+            Assert.IsTrue(_block.SplitBlockIntoStrings("abc123").Length == 2);
         }
 
         [Test]
         public void Insert64bitString_expect2blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("abcde12").Count == 2);
+            Assert.IsTrue(_block.SplitBlockIntoStrings("abcde12").Length == 2);
         }
 
         [Test]
         public void Insert24bitString_expect1blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("abc").Count == 1);
+            Assert.IsTrue(_block.SplitBlockIntoStrings("abc").Length == 1);
         }
 
         [Test]
         public void Insert16bitString_expect1blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("ab").Count == 1);
+            Assert.IsTrue(_block.SplitBlockIntoStrings("ab").Length == 1);
         }
 
         [Test]
         public void Insert8bitString_expect1blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("a").Count == 1);
+            Assert.IsTrue(_block.SplitBlockIntoStrings("a").Length == 1);
         }
 
         [Test]
         public void ConvertAToBinary()
         {
-            var letterA = System.Text.Encoding.UTF8.GetBytes("A");
-            var binaryOfA = _block.ConvertStringToBitArray("A");
-            Assert.IsTrue(letterA.SequenceEqual(binaryOfA));
+            const int byteA = 65;
+            var bitString = Convert.ToString(byteA, 2).PadLeft(8, '0');
+            var binaryOfA = _block.ConvertSingleLetterToBinaryString('A');
+            //Assert.IsTrue(binaryOfA.Equals(letterA));
+            Assert.AreEqual(bitString, binaryOfA);
         }
 
         [Test]
         public void ConvertLongStringToBinary()
         {
-            var lotsOfLetters = System.Text.Encoding.UTF8.GetBytes("ABC123!!");
-            var binaryOfLetters = _block.ConvertStringToBitArray("ABC123!!");
-            Assert.IsTrue(lotsOfLetters.SequenceEqual(binaryOfLetters));
-        }
-
-        [Test]
-        public void CheckIfExtraPaddingIsAdded()
-        {
-            var threeSignString = "ABC";
-            var binaryOfLetters = _block.ConvertStringToBitArray(threeSignString);
-            Assert.IsTrue(32 == _block.ConvertStringToBitArray(threeSignString).Count());
+            const string bitString = "0100000101000010010000110011000100110010001100110010000100100001";
+            var binaryOfLetters = _block.ConvertStringToBinaryString("ABC123!!");
+            Assert.AreEqual(bitString, binaryOfLetters);
         }
     }
 }
