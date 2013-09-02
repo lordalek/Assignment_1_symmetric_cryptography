@@ -3,6 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assignment_1_symmetric_cryptography", "Assignment 1 - symmetric cryptography\Assignment_1_symmetric_cryptography.csproj", "{3F2D0F00-E596-489F-9EF9-2C19E03A2B56}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3799A3CD-FE98-4210-A77B-592732BFD3FB}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{744108A7-D39B-4206-934E-C3607490C9E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assigment_1_Tests", "Assigment_1_Tests\Assigment_1_Tests.csproj", "{FD7ABF59-A5A3-43D8-8401-8B17317034A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +22,14 @@ Global
 		{3F2D0F00-E596-489F-9EF9-2C19E03A2B56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F2D0F00-E596-489F-9EF9-2C19E03A2B56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F2D0F00-E596-489F-9EF9-2C19E03A2B56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{744108A7-D39B-4206-934E-C3607490C9E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{744108A7-D39B-4206-934E-C3607490C9E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{744108A7-D39B-4206-934E-C3607490C9E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{744108A7-D39B-4206-934E-C3607490C9E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD7ABF59-A5A3-43D8-8401-8B17317034A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD7ABF59-A5A3-43D8-8401-8B17317034A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD7ABF59-A5A3-43D8-8401-8B17317034A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD7ABF59-A5A3-43D8-8401-8B17317034A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
