@@ -12,7 +12,7 @@ namespace Assigment_1_Tests
         public void Init()
         {
             _cryptionKey = new CryptionKey();
-            _cryptionKey.SetKey("1isAKey1", 1);
+            _cryptionKey.SetKey("1isAKey1", 1, false);
         }
 
         [Test]

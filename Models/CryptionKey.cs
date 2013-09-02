@@ -44,7 +44,7 @@ namespace Models
             get { return _key; }
         }
 
-        public void SetKey(string inputKey, int round)
+        public void SetKey(string inputKey, int round, bool isInverse)
         {
             if (string.IsNullOrEmpty(inputKey))
                 throw new NullReferenceException("inputKey is null or empty");
@@ -55,7 +55,7 @@ namespace Models
                 binaryKey = PerformPC1(binaryKey);
                 binaryKey = GetSevenBitsInKey(binaryKey);
                 string[] keySplits = SplitKey(binaryKey);
-                binaryKey = ShiftKey(keySplits[0], 1) + ShiftKey(keySplits[1], 1);
+                binaryKey = ShiftKey(keySplits[0], 1, isInverse) + ShiftKey(keySplits[1], 1, isInverse);
                 binaryKey = PerformPC2(binaryKey);
                 _key = binaryKey;
             }
@@ -63,7 +63,7 @@ namespace Models
             {
                 string binaryKey = inputKey;
                 string[] keySplits = SplitKey(binaryKey);
-                binaryKey = ShiftKey(keySplits[0], 1) + ShiftKey(keySplits[1], 1);
+                binaryKey = ShiftKey(keySplits[0], round, isInverse) + ShiftKey(keySplits[1], round, isInverse);
                 binaryKey = PerformPC2(binaryKey);
                 _key = binaryKey;
             }
@@ -124,34 +124,44 @@ namespace Models
             return keySplits;
         }
 
-        public string ShiftKey(string inputKey, int roundNumber)
+        public string ShiftKey(string inputKey, int roundNumber, bool isInverse)
         {
             int shiftDistance = ScheduledLeftShifts[roundNumber];
             var shiftedKey = new char[KeySize/2];
-            if (shiftDistance >= 1)
+            if (isInverse)
             {
-                for (int i = 0; i < inputKey.Length; i++)
-                {
-                    if (i == 0)
-                        shiftedKey[KeySize/2 - shiftDistance] = inputKey[i];
-                    else
-                    {
-                        shiftedKey[i] = inputKey[i - shiftDistance];
-                    }
-                }
+                /**
+                 * Implement shift right for inverse
+                 */
             }
             else
             {
-                for (int i = 0; i < inputKey.Length; i++)
+
+                if (shiftDistance >= 1)
                 {
-                    if (i >= 2)
+                    for (int i = 0; i < inputKey.Length; i++)
                     {
-                        shiftedKey[i] = inputKey[i - shiftDistance];
+                        if (i == 0)
+                            shiftedKey[KeySize/2 - shiftDistance] = inputKey[i];
+                        else
+                        {
+                            shiftedKey[i] = inputKey[i - shiftDistance];
+                        }
                     }
-                    else if (i == 0)
-                        shiftedKey[KeySize/2 - shiftDistance] = shiftedKey[i];
-                    else if (i == 1)
-                        shiftedKey[KeySize/2 - shiftDistance/2] = shiftedKey[i];
+                }
+                else
+                {
+                    for (int i = 0; i < inputKey.Length; i++)
+                    {
+                        if (i >= 2)
+                        {
+                            shiftedKey[i] = inputKey[i - shiftDistance];
+                        }
+                        else if (i == 0)
+                            shiftedKey[KeySize/2 - shiftDistance] = shiftedKey[i];
+                        else if (i == 1)
+                            shiftedKey[KeySize/2 - shiftDistance/2] = shiftedKey[i];
+                    }
                 }
             }
             return shiftedKey.ToString();
