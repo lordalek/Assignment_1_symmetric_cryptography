@@ -32,41 +32,48 @@ namespace Models
         //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
         public readonly int[] ScheduledLeftShifts = {1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
 
-        private string _key = string.Empty;
+        private readonly string[] _subKeys = new string[16];
 
         public int KeySize
         {
             get { return 56; }
         }
 
-        public string Key
+        public string getKey(int roundNumber)
         {
-            get { return _key; }
+            if (roundNumber <= 0 || string.IsNullOrEmpty(_subKeys[0]))
+                return "-1";
+
+            return _subKeys[roundNumber - 1];
         }
 
-        public void SetKey(string inputKey, int round, bool isInverse)
+        public void SetKey(string inputKey, bool isInverse)
         {
             if (string.IsNullOrEmpty(inputKey))
                 throw new NullReferenceException("inputKey is null or empty");
             var block = new Block();
-            if (round <= 1)
+            for (int round = 0; round < 16; round++)
             {
-                string binaryKey = block.ConvertStringToBinaryString(inputKey);
-                binaryKey = PerformPC1(binaryKey);
-                binaryKey = GetSevenBitsInKey(binaryKey);
-                string[] keySplits = SplitKey(binaryKey);
-                binaryKey = ShiftKey(keySplits[0], 1, isInverse) + ShiftKey(keySplits[1], 1, isInverse);
-                binaryKey = PerformPC2(binaryKey);
-                _key = binaryKey;
+                if (round <= 1)
+                {
+                    string binaryKey = block.ConvertStringToBinaryString(inputKey);
+                    binaryKey = PerformPC1(binaryKey);
+                    binaryKey = GetSevenBitsInKey(binaryKey);
+                    string[] keySplits = SplitKey(binaryKey);
+                    binaryKey = ShiftKey(keySplits[0], 1, isInverse) + ShiftKey(keySplits[1], 1, isInverse);
+                    binaryKey = PerformPC2(binaryKey);
+                    _subKeys[round - 1] = binaryKey;
+                }
+                else
+                {
+                    string binaryKey = inputKey;
+                    string[] keySplits = SplitKey(binaryKey);
+                    binaryKey = ShiftKey(keySplits[0], round, isInverse) + ShiftKey(keySplits[1], round, isInverse);
+                    binaryKey = PerformPC2(binaryKey);
+                    _subKeys[round - 1] = binaryKey;
+                } 
             }
-            else
-            {
-                string binaryKey = inputKey;
-                string[] keySplits = SplitKey(binaryKey);
-                binaryKey = ShiftKey(keySplits[0], round, isInverse) + ShiftKey(keySplits[1], round, isInverse);
-                binaryKey = PerformPC2(binaryKey);
-                _key = binaryKey;
-            }
+           
         }
 
         public string GetSevenBitsInKey(string inputKey)
