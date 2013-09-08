@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Models.Annotations;
 
 namespace Models
 {
@@ -41,7 +42,7 @@ namespace Models
 
         public string getKey(int roundNumber)
         {
-            if (roundNumber <= 0 || string.IsNullOrEmpty(_subKeys[0]))
+            if (roundNumber <= 0 || string.IsNullOrEmpty(_subKeys[0]) || string.IsNullOrEmpty(_subKeys[15]))
                 return "-1";
 
             return _subKeys[roundNumber - 1];
@@ -52,32 +53,43 @@ namespace Models
             if (string.IsNullOrEmpty(inputKey))
                 throw new NullReferenceException("inputKey is null or empty");
             var block = new Block();
-            for (int round = 0; round < 16; round++)
+            for (int round = 1; round <= 16; round++)
             {
                 if (round <= 1)
                 {
                     string binaryKey = block.ConvertStringToBinaryString(inputKey);
                     binaryKey = PerformPC1(binaryKey);
-                    binaryKey = GetSevenBitsInKey(binaryKey);
-                    string[] keySplits = SplitKey(binaryKey);
-                    binaryKey = ShiftKey(keySplits[0], 1, isInverse) + ShiftKey(keySplits[1], 1, isInverse);
-                    binaryKey = PerformPC2(binaryKey);
-                    _subKeys[round - 1] = binaryKey;
+                    //binaryKey = GetSevenBitsInKey(binaryKey);
+                    GenerateKey(binaryKey, isInverse, round);
                 }
                 else
                 {
-                    string binaryKey = inputKey;
-                    string[] keySplits = SplitKey(binaryKey);
-                    binaryKey = ShiftKey(keySplits[0], round, isInverse) + ShiftKey(keySplits[1], round, isInverse);
-                    binaryKey = PerformPC2(binaryKey);
-                    _subKeys[round - 1] = binaryKey;
-                } 
+                    GenerateKey(_subKeys[round - 1], isInverse, round);
+                }
             }
-           
+        }
+
+        private void GenerateKey([NotNull] string inputKey, bool isInverse, int round)
+        {
+            if (inputKey == null) throw new ArgumentNullException("inputKey");
+            if (isInverse)
+            {
+            }
+            else
+            {
+                string[] keySplits = SplitKey(inputKey);
+                inputKey = ShiftKey(keySplits[0], round, isInverse) + ShiftKey(keySplits[1], round, isInverse);
+                inputKey = PerformPC2(inputKey);
+                _subKeys[round - 1] = inputKey;
+            }
         }
 
         public string GetSevenBitsInKey(string inputKey)
         {
+            if (inputKey.Length != 64)
+            {
+                return "-1";
+            }
             var sp = new StringBuilder();
             int i = 0;
             for (int j = 0; j < 8; j++)
@@ -108,10 +120,12 @@ namespace Models
 
         public string PerformPC2(string nRoundKey)
         {
+            if (nRoundKey.Length != 56)
+                return "-1";
             var sb = new StringBuilder();
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i <= 6; i++)
             {
-                for (int j = 0; j < 7; j++)
+                for (int j = 0; j <= 8; j++)
                 {
                     int idx = PC1[i, j];
                     sb.Append(nRoundKey[idx - 1]);
@@ -127,10 +141,16 @@ namespace Models
             var keySplits = new string[2];
             keySplits[0] = inputKey.Substring(0, KeySize/2 - 1);
             keySplits[1] = inputKey.Substring(KeySize/2, inputKey.Length - KeySize/2 - 1);
-
             return keySplits;
         }
 
+        /// <summary>
+        /// Deprecated
+        /// </summary>
+        /// <param name="inputKey"></param>
+        /// <param name="roundNumber"></param>
+        /// <param name="isInverse"></param>
+        /// <returns></returns>
         public string ShiftKey(string inputKey, int roundNumber, bool isInverse)
         {
             int shiftDistance = ScheduledLeftShifts[roundNumber];
@@ -143,7 +163,6 @@ namespace Models
             }
             else
             {
-
                 if (shiftDistance >= 1)
                 {
                     for (int i = 0; i < inputKey.Length; i++)
@@ -171,7 +190,57 @@ namespace Models
                     }
                 }
             }
-            return shiftedKey.ToString();
+            return new string(shiftedKey);
+        }
+
+        public string ShiftUsingSB(string inputKey, int roundNumber, bool isInverse)
+        {
+            if (inputKey == null) throw new ArgumentNullException("inputKey");
+            int shiftDistance = ScheduledLeftShifts[roundNumber];
+            var sb = new StringBuilder();
+            if (isInverse)
+            {
+                //Right
+                if (shiftDistance <= 1)
+                {
+                    sb.Append(inputKey[inputKey.Length -1]);
+                    for (int i = 0; i < inputKey.Length-1; i++)
+                    {
+                        sb.Append(inputKey[i]);
+                    }
+                }
+                else
+                {
+                    sb.Append(inputKey[inputKey.Length-2]);
+                    sb.Append(inputKey[inputKey.Length - 1]);
+                    for (int i = 0; i < inputKey.Length -2; i++)
+                    {
+                        sb.Append(inputKey[i]);
+                    }
+                }
+            }
+            else
+            {
+                //Left
+                if (shiftDistance <= 1)
+                {
+                    for (int i = 1; i < inputKey.Length; i++)
+                    {
+                        sb.Append(inputKey[i]);
+                    }
+                    sb.Append(inputKey[0]);
+                }
+                else
+                {
+                    for (int i = 2; i < inputKey.Length; i++)
+                    {
+                        sb.Append(inputKey[i]);
+                    }
+                    sb.Append(inputKey[0]);
+                    sb.Append(inputKey[1]);
+                }
+            }
+            return sb.ToString();
         }
     }
 }
