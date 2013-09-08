@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 using Models.Annotations;
 
@@ -34,7 +35,8 @@ namespace Models
         public readonly int[] ScheduledLeftShifts = {1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
 
         private readonly string[] _subKeys = new string[16];
-        private readonly string[] _shiftedKeys = new string[16];
+        private readonly string[] _shiftedKeysLeftSide = new string[16];
+        private readonly  string[] _shiftedKeysRightSide = new string[16];
 
         public int KeySize
         {
@@ -56,6 +58,23 @@ namespace Models
             var block = new Block();
             if (isInverse)
             {
+                for (int round = 1; round <= 16; round++)
+                {
+                    if (round <= 1)
+                    {
+                        string binaryKey = block.ConvertStringToBinaryString(inputKey);
+                        binaryKey = PerformPC1(binaryKey);
+                        string[] keySplits = SplitKey(binaryKey);
+                        _shiftedKeysLeftSide[round - 1] = ShiftUsingSB(keySplits[0], round, true);
+                        _shiftedKeysRightSide[round - 1] = ShiftUsingSB(keySplits[1], round, true);
+                        //binaryKey = GetSevenBitsInKey(binaryKey);
+                        GenerateKey(_shiftedKeysLeftSide[round - 1],_shiftedKeysRightSide[round - 1], true, round);
+                    }
+                    else
+                    {
+                        GenerateKey(_shiftedKeysLeftSide[round - 2] , _shiftedKeysRightSide[round -2], true, round);
+                    }
+                }
             }
             else
             {
@@ -65,36 +84,40 @@ namespace Models
                     {
                         string binaryKey = block.ConvertStringToBinaryString(inputKey);
                         binaryKey = PerformPC1(binaryKey);
-                        //binaryKey = GetSevenBitsInKey(binaryKey);
-                        GenerateKey(binaryKey, false, round);
+                        string[] keySplits = SplitKey(binaryKey);
+                        _shiftedKeysLeftSide[round - 1] = ShiftUsingSB(keySplits[0], round, false);
+                        _shiftedKeysRightSide[round - 1] = ShiftUsingSB(keySplits[1], round, false);
+                        GenerateKey(_shiftedKeysLeftSide[round -1], _shiftedKeysRightSide[round -1], false, round);
                     }
                     else
                     {
-                        GenerateKey(_shiftedKeys[round - 2], false, round);
+                        GenerateKey(_shiftedKeysLeftSide[round - 2], _shiftedKeysRightSide[round - 2], false, round);
                     }
                 }
             }
         }
 
-        private void GenerateKey([NotNull] string inputKey, bool isInverse, int round)
+        private void GenerateKey([NotNull] string leftSide, [NotNull] string rightSide, bool isInverse, int round)
         {
-            if (inputKey == null) throw new ArgumentNullException("inputKey");
+            if (leftSide == null) throw new ArgumentNullException("leftSide");
+            if (rightSide == null) throw new ArgumentNullException("rightSide");
             if (isInverse)
             {
-                string[] keySplits = SplitKey(inputKey);
-                inputKey = ShiftUsingSB(keySplits[0], round, true) + ShiftUsingSB(keySplits[1], round, true);
-                _shiftedKeys[round - 1] = inputKey;
-                inputKey = PerformPC2(inputKey);
-                _subKeys[round - 1] = inputKey;
+                leftSide = ShiftUsingSB(leftSide, round, true);
+                rightSide = ShiftUsingSB(rightSide, round, true);
+                _shiftedKeysLeftSide[round - 1] = leftSide;
+                _shiftedKeysRightSide[round - 1] = rightSide;
+                leftSide = PerformPC2(leftSide + rightSide);
+                _subKeys[round - 1] = leftSide;
             }
             else
             {
-                string[] keySplits = SplitKey(inputKey);
-                inputKey = ShiftUsingSB(keySplits[0], round, false);
-                inputKey += ShiftUsingSB(keySplits[1], round, false);
-                _shiftedKeys[round - 1] = inputKey;
-                inputKey = PerformPC2(inputKey);
-                _subKeys[round - 1] = inputKey;
+                leftSide = ShiftUsingSB(leftSide, round, false);
+                rightSide = ShiftUsingSB(rightSide, round, false);
+                _shiftedKeysLeftSide[round - 1] = leftSide;
+                _shiftedKeysRightSide[round - 1] = rightSide;
+                leftSide = PerformPC2(leftSide + rightSide);
+                _subKeys[round - 1] = leftSide;
             }
         }
 
