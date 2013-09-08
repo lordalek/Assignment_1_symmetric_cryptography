@@ -43,7 +43,7 @@ namespace Models
             get { return 56; }
         }
 
-        public string getKey(int roundNumber)
+        public string GetKey(int roundNumber)
         {
             if (roundNumber <= 0 || string.IsNullOrEmpty(_subKeys[0]) || string.IsNullOrEmpty(_subKeys[15]))
                 return "-1";

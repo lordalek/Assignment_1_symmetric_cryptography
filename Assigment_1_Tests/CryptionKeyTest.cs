@@ -53,7 +53,7 @@ namespace Assigment_1_Tests
             string[] keys = new string[16];
             for (int round = 1; round <= 16; round++)
             {
-                keys[round - 1] = _cryptionKey.getKey(round);
+                keys[round - 1] = _cryptionKey.GetKey(round);
             }
             Assert.IsNotNull(keys[0]);
             Assert.IsNotNull(keys[1]);

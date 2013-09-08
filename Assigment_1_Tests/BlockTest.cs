@@ -78,5 +78,30 @@ namespace Assigment_1_Tests
             var binaryOfLetters = _block.ConvertStringToBinaryString("ABC123!!");
             Assert.AreEqual(bitString, binaryOfLetters);
         }
+
+        [Test]
+        public void TestLengthOfInitialPermutation()
+        {
+            var input = "abcasdwe";
+            var inputAsByes = _block.ConvertStringToBinaryString(input);
+            var permutated = _block.InitialPermutation(inputAsByes);
+            Assert.IsTrue(inputAsByes.Length == permutated.Length);
+        }
+
+        [Test]
+        public void CheckSizeOfExpansionOfETable()
+        {
+            var input = _block.ConvertStringToBinaryString("abc1");
+            input = _block.Expand32BitTextInto48BitText(input);
+            Assert.IsTrue(input.Length == 48);
+        }
+
+        [Test]
+        public void SeeIfXORFlips8BitString()
+        {
+            var input = "11001010";
+            var flippedInput = "00110101";
+            Assert.AreEqual(flippedInput, _block.XORTwoBinaryStrings(input, "11111111"));
+        }
     }
 }
