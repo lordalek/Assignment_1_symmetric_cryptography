@@ -46,5 +46,25 @@ namespace Assigment_1_Tests
             var outputWith1Shift = _cryptionKey.ShiftUsingSB(input, 3, true);
             Assert.AreEqual("0b10000000000000", outputWith1Shift);
         }
+
+        [Test]
+        public void CheckIf16KeysAreGenerated()
+        {
+            string[] keys = new string[16];
+            for (int round = 1; round <= 16; round++)
+            {
+                keys[round - 1] = _cryptionKey.getKey(round);
+            }
+            Assert.IsNotNull(keys[0]);
+            Assert.IsNotNull(keys[1]);
+            Assert.IsNotNull(keys[2]);
+            Assert.IsNotNull(keys[3]);
+            Assert.IsNotNull(keys[5]);
+            Assert.IsNotNull(keys[6]);
+            Assert.IsNotNull(keys[10]);
+            Assert.IsNotNull(keys[11]); 
+            Assert.IsNotNull(keys[15]);
+            Assert.IsNotNull(keys[0]);
+        }
     }
 }
