@@ -34,6 +34,7 @@ namespace Models
         public readonly int[] ScheduledLeftShifts = {1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
 
         private readonly string[] _subKeys = new string[16];
+        private readonly string[] _shiftedKeys = new string[16];
 
         public int KeySize
         {
@@ -53,18 +54,24 @@ namespace Models
             if (string.IsNullOrEmpty(inputKey))
                 throw new NullReferenceException("inputKey is null or empty");
             var block = new Block();
-            for (int round = 1; round <= 16; round++)
+            if (isInverse)
             {
-                if (round <= 1)
+            }
+            else
+            {
+                for (int round = 1; round <= 16; round++)
                 {
-                    string binaryKey = block.ConvertStringToBinaryString(inputKey);
-                    binaryKey = PerformPC1(binaryKey);
-                    //binaryKey = GetSevenBitsInKey(binaryKey);
-                    GenerateKey(binaryKey, isInverse, round);
-                }
-                else
-                {
-                    GenerateKey(_subKeys[round - 1], isInverse, round);
+                    if (round <= 1)
+                    {
+                        string binaryKey = block.ConvertStringToBinaryString(inputKey);
+                        binaryKey = PerformPC1(binaryKey);
+                        //binaryKey = GetSevenBitsInKey(binaryKey);
+                        GenerateKey(binaryKey, false, round);
+                    }
+                    else
+                    {
+                        GenerateKey(_shiftedKeys[round - 2], false, round);
+                    }
                 }
             }
         }
@@ -74,11 +81,18 @@ namespace Models
             if (inputKey == null) throw new ArgumentNullException("inputKey");
             if (isInverse)
             {
+                string[] keySplits = SplitKey(inputKey);
+                inputKey = ShiftUsingSB(keySplits[0], round, true) + ShiftUsingSB(keySplits[1], round, true);
+                _shiftedKeys[round - 1] = inputKey;
+                inputKey = PerformPC2(inputKey);
+                _subKeys[round - 1] = inputKey;
             }
             else
             {
                 string[] keySplits = SplitKey(inputKey);
-                inputKey = ShiftKey(keySplits[0], round, isInverse) + ShiftKey(keySplits[1], round, isInverse);
+                inputKey = ShiftUsingSB(keySplits[0], round, false);
+                inputKey += ShiftUsingSB(keySplits[1], round, false);
+                _shiftedKeys[round - 1] = inputKey;
                 inputKey = PerformPC2(inputKey);
                 _subKeys[round - 1] = inputKey;
             }
@@ -106,6 +120,8 @@ namespace Models
 
         public string PerformPC1(string firstRoundKey)
         {
+            if (firstRoundKey.Length < 56)
+                return "-1";
             var sb = new StringBuilder();
             for (int i = 0; i < 8; i++)
             {
@@ -120,14 +136,14 @@ namespace Models
 
         public string PerformPC2(string nRoundKey)
         {
-            if (nRoundKey.Length != 56)
-                return "-1";
+            if (nRoundKey.Length < 48)
+                return "-2";
             var sb = new StringBuilder();
-            for (int i = 0; i <= 6; i++)
+            for (int i = 0; i < 6; i++)
             {
-                for (int j = 0; j <= 8; j++)
+                for (int j = 0; j < 8; j++)
                 {
-                    int idx = PC1[i, j];
+                    int idx = PC2[i, j];
                     sb.Append(nRoundKey[idx - 1]);
                 }
             }
@@ -136,11 +152,11 @@ namespace Models
 
         public string[] SplitKey(string inputKey)
         {
-            if (inputKey.Length < KeySize)
+            if (inputKey.Length < 48)
                 throw new Exception("Invalid input key length");
             var keySplits = new string[2];
-            keySplits[0] = inputKey.Substring(0, KeySize/2 - 1);
-            keySplits[1] = inputKey.Substring(KeySize/2, inputKey.Length - KeySize/2 - 1);
+            keySplits[0] = inputKey.Substring(0, KeySize/2);
+            keySplits[1] = inputKey.Substring(KeySize/2, inputKey.Length - KeySize/2);
             return keySplits;
         }
 
@@ -196,24 +212,24 @@ namespace Models
         public string ShiftUsingSB(string inputKey, int roundNumber, bool isInverse)
         {
             if (inputKey == null) throw new ArgumentNullException("inputKey");
-            int shiftDistance = ScheduledLeftShifts[roundNumber];
+            int shiftDistance = ScheduledLeftShifts[roundNumber -1];
             var sb = new StringBuilder();
             if (isInverse)
             {
                 //Right
                 if (shiftDistance <= 1)
                 {
-                    sb.Append(inputKey[inputKey.Length -1]);
-                    for (int i = 0; i < inputKey.Length-1; i++)
+                    sb.Append(inputKey[inputKey.Length - 1]);
+                    for (int i = 0; i < inputKey.Length - 1; i++)
                     {
                         sb.Append(inputKey[i]);
                     }
                 }
                 else
                 {
-                    sb.Append(inputKey[inputKey.Length-2]);
+                    sb.Append(inputKey[inputKey.Length - 2]);
                     sb.Append(inputKey[inputKey.Length - 1]);
-                    for (int i = 0; i < inputKey.Length -2; i++)
+                    for (int i = 0; i < inputKey.Length - 2; i++)
                     {
                         sb.Append(inputKey[i]);
                     }

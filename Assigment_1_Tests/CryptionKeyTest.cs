@@ -12,21 +12,8 @@ namespace Assigment_1_Tests
         public void Init()
         {
             _cryptionKey = new CryptionKey();
-            //_cryptionKey.SetKey("1isAKey1", false);
+            _cryptionKey.SetKey("1isAKey1", false);
            
-        }
-
-        [Test]
-        public void tester()
-        {
-            var test = _cryptionKey.getKey(1);
-            var test2 = _cryptionKey.getKey(16);
-            if (test.Equals(test2))
-                test2 = "-1";
-            else
-            {
-                test2 = "ok";
-            } 
         }
 
         [Test]
