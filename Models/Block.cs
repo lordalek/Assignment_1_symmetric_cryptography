@@ -50,8 +50,7 @@ namespace Models
             {
                 sb.Append(Convert.ToString(b, 2));
             }
-            var binarystring = sb.ToString();
-            return binarystring.PadLeft(8, '0');
+            return sb.ToString().PadLeft(8, '0');
         }
 
         public string ConvertStringToBinaryString(string inputString)
@@ -71,10 +70,55 @@ namespace Models
         public string InitialPermutation([NotNull] string inputText)
         {
             if (inputText == null) throw new ArgumentNullException("inputText");
-            return string.Empty;
+            var sb = new StringBuilder();
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    var idx = InitialPermutationTable[i, j];
+                    sb.Append(inputText[idx - 1]);
+                }
+            }
+            return sb.ToString();
         }
 
-        public readonly int[,] IP =
+        public string Expand32BitTextInto48BitText([NotNull] string TxtWith32BitSize)
+        {
+            if (TxtWith32BitSize == null) throw new ArgumentNullException("TxtWith32BitSize");
+            if (TxtWith32BitSize.Length != 32)
+                throw new Exception("Invalid txt length: " + TxtWith32BitSize.Length);
+            var sb = new StringBuilder();
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    var idx = ExpansionPermutationTable[i, j];
+                    sb.Append(TxtWith32BitSize[idx - 1]);
+                }
+            }
+            return sb.ToString();
+        }
+
+        public string XORTwoBinaryStrings([NotNull] string leftSide, [NotNull] string rightSide )
+        {
+            if (leftSide == null) throw new ArgumentNullException("leftSide");
+            if (rightSide == null) throw new ArgumentNullException("rightSide");
+            if(rightSide.Length != leftSide.Length)
+                throw new Exception("Length of left and right side does not match");
+            var sb = new StringBuilder();
+            for (int i = 0; i < leftSide.Length; i++)
+            {
+                sb.Append(XorTwoChars(leftSide[i], rightSide[i]));
+            }
+            return sb.ToString();
+        }
+
+        public string XorTwoChars(char a, char b)
+        {
+            return a.Equals(b) ? "0" : "1";
+        }
+
+        public readonly int[,] InitialPermutationTable =
         {
             {58, 50, 42, 34, 26, 18, 10, 2},
             {60, 52, 44, 36, 28, 20, 12, 4,},
@@ -86,7 +130,7 @@ namespace Models
             {63, 55, 47, 39, 31, 23, 15, 7}
         };
 
-        public readonly int[,] InversedIP =
+        public readonly int[,] InverseInitialPermutationTable =
         {
             {40, 8, 48, 16, 56, 24, 64, 32},
             {39, 7, 47, 15, 55, 23, 63, 31},
@@ -98,7 +142,7 @@ namespace Models
             {33, 1, 41, 9, 49, 17, 57, 25}
         };
 
-        public readonly int[,] ExpansionPermutation =
+        public readonly int[,] ExpansionPermutationTable =
         {
             {32, 1, 2, 3, 4, 5},
             {4, 5, 6, 7, 8, 9},
@@ -110,7 +154,7 @@ namespace Models
             {28, 29, 30, 31, 32, 1}
         };
 
-        public readonly int[,] PermutationFunction =
+        public readonly int[,] PermutationFunctionTable =
         {
             {16, 7, 20, 21, 29, 12, 28, 17},
             {1, 15, 23, 26, 5, 18, 31, 10},
