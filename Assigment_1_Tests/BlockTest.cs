@@ -103,5 +103,19 @@ namespace Assigment_1_Tests
             var flippedInput = "00110101";
             Assert.AreEqual(flippedInput, _block.XORTwoBinaryStrings(input, "11111111"));
         }
+
+        [Test]
+        public void Insert6BitText_Expect4BitText()
+        {
+            var input = "100101";
+            Assert.IsTrue(_block.SubstituteIntoSBox(_block.SBox1, input).Length == 4);
+        }
+
+        [Test]
+        public void Insert48BitTextIntoSBox_Expect32BiText()
+        {
+            var input = _block.ConvertStringToBinaryString("abcasd");
+            Assert.AreEqual(_block.Substitute48BitTextInto32BitTextUsingSBox(input).Length ,32);
+        }
     }
 }

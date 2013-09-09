@@ -18,11 +18,11 @@ namespace Models
             if (string.IsNullOrEmpty(inputBlock))
                 throw new NullReferenceException("InputBlock is null or empty");
 
-            if (inputBlock.Length > BlockSize/8)
+            if (inputBlock.Length > BlockSize / 8)
                 throw new Exception("inputBlock length is too long.");
             var binarys = ConvertStringToBinaryString(inputBlock);
             string[] blocks;
-            if (binarys.Length <= BlockSize/2)
+            if (binarys.Length <= BlockSize / 2)
             {
                 blocks = new string[1];
                 blocks[0] = binarys;
@@ -30,10 +30,10 @@ namespace Models
             else
             {
                 blocks = new string[2];
-                blocks[0] = binarys.Substring(0, BlockSize/2 - 1);
-                blocks[1] = binarys.Substring(BlockSize/2, binarys.Length - BlockSize/2 - 1);
+                blocks[0] = binarys.Substring(0, BlockSize / 2 - 1);
+                blocks[1] = binarys.Substring(BlockSize / 2, binarys.Length - BlockSize / 2 - 1);
                 //make sure block is 32 bits long.
-                blocks[1] = blocks[1].PadRight(BlockSize/2, '0');
+                blocks[1] = blocks[1].PadRight(BlockSize / 2, '0');
             }
             return blocks;
         }
@@ -96,6 +96,7 @@ namespace Models
                     sb.Append(TxtWith32BitSize[idx - 1]);
                 }
             }
+            //48 bit
             return sb.ToString();
         }
 
@@ -110,6 +111,33 @@ namespace Models
             {
                 sb.Append(XorTwoChars(leftSide[i], rightSide[i]));
             }
+            return sb.ToString();
+        }
+
+        public string SubstituteIntoSBox([NotNull] int[,] SBox, [NotNull] string inputText)
+        {
+            if (SBox == null) throw new ArgumentNullException("SBox");
+            if (inputText == null) throw new ArgumentNullException("inputText");
+            var rowCounter = Convert.ToInt32(inputText[0].ToString() + inputText[inputText.Length - 1].ToString(), 2);
+            var columnCounter = Convert.ToInt32(inputText[1].ToString() + inputText[2].ToString() + inputText[3].ToString() + inputText[4].ToString(), 2);
+            var sBoxValue = Convert.ToString(SBox[rowCounter, columnCounter], 2);
+            return sBoxValue.PadLeft(4, '0');
+        }
+
+        public string Substitute48BitTextInto32BitTextUsingSBox([NotNull] string textOf48Bits)
+        {
+            if (textOf48Bits == null) throw new ArgumentNullException("textOf48Bits");
+            if(textOf48Bits.Length != 48)
+                throw new Exception("Invalid length of input text: " + textOf48Bits.Length);
+            var sb = new StringBuilder();
+            sb.Append(SubstituteIntoSBox(SBox1, textOf48Bits.Substring(0, 6)));
+            sb.Append(SubstituteIntoSBox(SBox2, textOf48Bits.Substring(6, 6)));
+            sb.Append(SubstituteIntoSBox(SBox3, textOf48Bits.Substring(12, 6)));
+            sb.Append(SubstituteIntoSBox(SBox4, textOf48Bits.Substring(18, 6)));
+            sb.Append(SubstituteIntoSBox(SBox5, textOf48Bits.Substring(24, 6)));
+            sb.Append(SubstituteIntoSBox(SBox6, textOf48Bits.Substring(30, 6)));
+            sb.Append(SubstituteIntoSBox(SBox7, textOf48Bits.Substring(36, 6)));
+            sb.Append(SubstituteIntoSBox(SBox8, textOf48Bits.Substring(42, 6)));
             return sb.ToString();
         }
 
