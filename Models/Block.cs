@@ -146,6 +146,21 @@ namespace Models
             return a.Equals(b) ? "0" : "1";
         }
 
+        public string Permutate32BitText([NotNull] string unPermutated32BitText)
+        {
+            if (unPermutated32BitText == null) throw new ArgumentNullException("unPermutated32BitText");
+            var sb = new StringBuilder();
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    var idx = PermutationFunctionTable[i, j];
+                    sb.Append(unPermutated32BitText[idx -1]);
+                }
+            }
+            return sb.ToString();
+        }
+
         public readonly int[,] InitialPermutationTable =
         {
             {58, 50, 42, 34, 26, 18, 10, 2},

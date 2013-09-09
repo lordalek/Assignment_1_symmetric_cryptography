@@ -117,5 +117,13 @@ namespace Assigment_1_Tests
             var input = _block.ConvertStringToBinaryString("abcasd");
             Assert.AreEqual(_block.Substitute48BitTextInto32BitTextUsingSBox(input).Length ,32);
         }
+
+        [Test]
+        public void Permutate32BitText_ExpectNotEqualTexts()
+        {
+            var input = _block.ConvertStringToBinaryString("ABcd");
+            var permutedText = _block.Permutate32BitText(input);
+            Assert.AreNotEqual(input, permutedText);
+        }
     }
 }
