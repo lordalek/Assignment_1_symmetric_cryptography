@@ -1,4 +1,5 @@
 ﻿using System;
+using Models;
 
 namespace Assignment_1_symmetric_cryptography
 {
@@ -20,6 +21,31 @@ namespace Assignment_1_symmetric_cryptography
         public string Substitute(string block)
         {
             return string.Empty;
+        }
+
+        public string Encrypt(string plaintext64Bit, string keyString64Bit)
+        {
+            if (plaintext64Bit == null) throw new ArgumentNullException("plaintext64Bit");
+            if (keyString64Bit == null) throw new ArgumentNullException("keyString64Bit");
+
+            //Check that input has 8 bytes of data
+            if(plaintext64Bit.Length < 8 || keyString64Bit.Length < 8)
+                throw new Exception("Invalid plaintext or key length.");
+
+            var keyModel = new CryptionKey();
+            var blockModel = new Block();
+            keyModel.SetKey(keyString64Bit, false);
+            plaintext64Bit = blockModel.ConvertStringToBinaryString(plaintext64Bit);
+            plaintext64Bit = blockModel.InitialPermutation(plaintext64Bit);
+            var twoBlockOfPlainText = blockModel.SplitBlockIntoStrings(plaintext64Bit);
+            for (var round = 1; round <= 16; round++)
+            {
+
+                twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
+                    keyModel.GetKey(round));
+            }
+            var cipherText = blockModel.ConvertBinariesToText(blockModel.InverseInitialPermutation(twoBlockOfPlainText[0] + twoBlockOfPlainText[1]));
+            return cipherText;
         }
     }
 }

@@ -27,9 +27,12 @@ namespace Assigment_1_Tests
         }
 
         [Test]
-        public void TestSubstitution()
+        public void InsertPlainttextIntoEncrpytion_expectSomeCipherText_withGenericKey()
         {
-            
+            var plainText = "abc123av";
+            var key = "12345678";
+            var cipherText = _logic.Encrypt(plainText, key);
+            Assert.AreNotEqual(plainText, cipherText);
         }
     }
 }

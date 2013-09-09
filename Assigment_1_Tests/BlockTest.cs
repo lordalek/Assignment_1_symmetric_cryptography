@@ -125,5 +125,13 @@ namespace Assigment_1_Tests
             var permutedText = _block.Permutate32BitText(input);
             Assert.AreNotEqual(input, permutedText);
         }
+
+        [Test]
+        public void InsertAAsBinary_ExpectLetterA()
+        {
+            var AasBinary = _block.ConvertStringToBinaryString("ABCabc12");
+            var letterA = _block.ConvertBinariesToText(AasBinary);
+            Assert.AreEqual(letterA, "ABCabc12");
+        }
     }
 }

@@ -18,22 +18,22 @@ namespace Models
             if (string.IsNullOrEmpty(inputBlock))
                 throw new NullReferenceException("InputBlock is null or empty");
 
-            if (inputBlock.Length > BlockSize / 8)
+            if (inputBlock.Length > BlockSize)
                 throw new Exception("inputBlock length is too long.");
-            var binarys = ConvertStringToBinaryString(inputBlock);
+            //var binarys = ConvertStringToBinaryString(inputBlock);
             string[] blocks;
-            if (binarys.Length <= BlockSize / 2)
+            if (inputBlock.Length <= BlockSize/2)
             {
                 blocks = new string[1];
-                blocks[0] = binarys;
+                blocks[0] = inputBlock;
             }
             else
             {
                 blocks = new string[2];
-                blocks[0] = binarys.Substring(0, BlockSize / 2 - 1);
-                blocks[1] = binarys.Substring(BlockSize / 2, binarys.Length - BlockSize / 2 - 1);
+                blocks[0] = inputBlock.Substring(0, BlockSize/2);
+                blocks[1] = inputBlock.Substring(BlockSize/2, BlockSize/2);
                 //make sure block is 32 bits long.
-                blocks[1] = blocks[1].PadRight(BlockSize / 2, '0');
+                blocks[1] = blocks[1].PadRight(BlockSize/2, '0');
             }
             return blocks;
         }
@@ -53,6 +53,42 @@ namespace Models
             return sb.ToString().PadLeft(8, '0');
         }
 
+        public string ConvertBinariesToText([NotNull] string binary)
+        {
+            if (binary == null) throw new ArgumentNullException("binary");
+            if (binary.Length < 8)
+                throw new Exception("Binary is too short");
+
+            var sb = new StringBuilder();
+            sb.Append(ConvertBinaryToLetter(binary.Substring(0, 8)));
+            sb.Append(ConvertBinaryToLetter(binary.Substring(8, 8)));
+            sb.Append(ConvertBinaryToLetter(binary.Substring(16, 8)));
+            sb.Append(ConvertBinaryToLetter(binary.Substring(24, 8)));
+            sb.Append(ConvertBinaryToLetter(binary.Substring(32, 8)));
+            sb.Append(ConvertBinaryToLetter(binary.Substring(40, 8)));
+            sb.Append(ConvertBinaryToLetter(binary.Substring(48, 8)));
+            sb.Append(ConvertBinaryToLetter(binary.Substring(56, 8)));
+            //var bytes = BitConverter.GetBytes(Convert.ToInt64(binary, 2)).Reverse().ToArray();
+            //var test1 = Encoding.UTF8.GetString(bytes);
+            ////var test = Convert.ToBase64String(bytes);
+            //return Encoding.UTF8.GetString(hex);
+            return sb.ToString();
+        }
+
+        public string ConvertBinaryToLetter([NotNull] string binary)
+        {
+            if (binary == null) throw new ArgumentNullException("binary");
+            if (binary.Length != 8)
+                return "-1";
+            //Encoding enc = new UTF8Encoding(true,true);
+            var bytes = BitConverter.GetBytes(Convert.ToInt16(binary, 2)).Reverse().ToArray();
+            //var hex = "\\u" + bytes[1].ToString().PadLeft(4, '0');
+            //bytes = enc.GetBytes(hex);
+            //var test1 = enc.GetString(bytes);
+            var test1 =  ASCIIEncoding.UTF8.GetString(bytes);
+            return test1[1].ToString();
+        }
+
         public string ConvertStringToBinaryString(string inputString)
         {
             if (string.IsNullOrEmpty(inputString))
@@ -63,7 +99,6 @@ namespace Models
             {
                 sb.Append(ConvertSingleLetterToBinaryString(c));
             }
-
             return sb.ToString().PadLeft(inputString.Length, '0');
         }
 
@@ -119,7 +154,10 @@ namespace Models
             if (SBox == null) throw new ArgumentNullException("SBox");
             if (inputText == null) throw new ArgumentNullException("inputText");
             var rowCounter = Convert.ToInt32(inputText[0].ToString() + inputText[inputText.Length - 1].ToString(), 2);
-            var columnCounter = Convert.ToInt32(inputText[1].ToString() + inputText[2].ToString() + inputText[3].ToString() + inputText[4].ToString(), 2);
+            var columnCounter =
+                Convert.ToInt32(
+                    inputText[1].ToString() + inputText[2].ToString() + inputText[3].ToString() +
+                    inputText[4].ToString(), 2);
             var sBoxValue = Convert.ToString(SBox[rowCounter, columnCounter], 2);
             return sBoxValue.PadLeft(4, '0');
         }
@@ -127,7 +165,7 @@ namespace Models
         public string Substitute48BitTextInto32BitTextUsingSBox([NotNull] string textOf48Bits)
         {
             if (textOf48Bits == null) throw new ArgumentNullException("textOf48Bits");
-            if(textOf48Bits.Length != 48)
+            if (textOf48Bits.Length != 48)
                 throw new Exception("Invalid length of input text: " + textOf48Bits.Length);
             var sb = new StringBuilder();
             sb.Append(SubstituteIntoSBox(SBox1, textOf48Bits.Substring(0, 6)));
@@ -155,10 +193,43 @@ namespace Models
                 for (int j = 0; j < 8; j++)
                 {
                     var idx = PermutationFunctionTable[i, j];
-                    sb.Append(unPermutated32BitText[idx -1]);
+                    sb.Append(unPermutated32BitText[idx - 1]);
                 }
             }
             return sb.ToString();
+        }
+
+        public string InverseInitialPermutation([NotNull] string text64Bit)
+        {
+            if (text64Bit == null) throw new ArgumentNullException("text64Bit");
+            var sb = new StringBuilder();
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    var idx = InverseInitialPermutationTable[i, j];
+                    sb.Append(text64Bit[idx - 1]);
+                }
+            }
+            return sb.ToString();
+        }
+
+        public string[] ExecuteRound([NotNull] string left32BitText, [NotNull] string right32BitText,
+            [NotNull] string roundKey)
+        {
+            if (left32BitText == null) throw new ArgumentNullException("left32BitText");
+            if (right32BitText == null) throw new ArgumentNullException("right32BitText");
+            if (roundKey == null) throw new ArgumentNullException("roundKey");
+            var processedText = new string[2];
+            processedText[0] = right32BitText;
+            right32BitText = Expand32BitTextInto48BitText(right32BitText);
+            //Now 48 bit text string
+            right32BitText = XORTwoBinaryStrings(right32BitText, roundKey);
+            right32BitText = Substitute48BitTextInto32BitTextUsingSBox(right32BitText);
+            right32BitText = Permutate32BitText(right32BitText);
+            right32BitText = XORTwoBinaryStrings(left32BitText, right32BitText);
+            processedText[1] = right32BitText;
+            return processedText;
         }
 
         public readonly int[,] InitialPermutationTable =
