@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Models.Annotations;
@@ -80,13 +81,25 @@ namespace Models
             if (binary == null) throw new ArgumentNullException("binary");
             if (binary.Length != 8)
                 return "-1";
-            //Encoding enc = new UTF8Encoding(true,true);
-            var bytes = BitConverter.GetBytes(Convert.ToInt16(binary, 2)).Reverse().ToArray();
-            //var hex = "\\u" + bytes[1].ToString().PadLeft(4, '0');
-            //bytes = enc.GetBytes(hex);
-            //var test1 = enc.GetString(bytes);
-            var test1 =  ASCIIEncoding.UTF8.GetString(bytes);
-            return test1[1].ToString();
+            var bytes = ConvertHexToByte(ConvertBinaryToHex(binary));
+            var text = Encoding.Unicode.GetString(bytes);
+            return text;
+        }
+
+        public byte[] convertToByteArray(string bins)
+        {
+            var bytes = new byte[1];
+            bytes[0] = Convert.ToByte(bins);
+            return bytes;
+        }
+
+        public byte[] ConvertHexToByte(string hex)
+        {
+            int NumberChars = hex.Length;
+            var bytes = new byte[NumberChars/2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
         }
 
         public string ConvertStringToBinaryString(string inputString)
@@ -339,5 +352,15 @@ namespace Models
             {7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8},
             {2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11}
         };
+
+        public string ConvertBinaryToHex(string binary)
+        {
+            if (binary.Length != 8)
+                return "-1";
+            var sb = new StringBuilder();
+            sb.AppendFormat("{0:X2}", Convert.ToByte(binary.Substring(0, 4), 2));
+            sb.AppendFormat("{0:X2}", Convert.ToByte(binary.Substring(4, 4), 2));
+            return sb.ToString();
+        }
     }
 }
