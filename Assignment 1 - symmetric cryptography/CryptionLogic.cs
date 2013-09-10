@@ -1,5 +1,6 @@
 ﻿using System;
 using Models;
+using Models.Annotations;
 
 namespace Assignment_1_symmetric_cryptography
 {
@@ -45,7 +46,33 @@ namespace Assignment_1_symmetric_cryptography
                     keyModel.GetKey(round));
             }
             var cipherText = blockModel.ConvertBinariesToText(blockModel.InverseInitialPermutation(twoBlockOfPlainText[0] + twoBlockOfPlainText[1]));
+            
             return cipherText;
+        }
+
+        public string Decrypt([NotNull] string cipherText, [NotNull] string key)
+        {
+            if (cipherText == null) throw new ArgumentNullException("cipherText");
+            if (key == null) throw new ArgumentNullException("key");
+            if (cipherText.Length < 8 || key.Length < 8)
+                throw new Exception("Invalid plaintext or key length.");
+
+            var keyModel = new CryptionKey();
+            var blockModel = new Block();
+            keyModel.SetKey(key, true);
+            cipherText = blockModel.ConvertStringToBinaryString(cipherText);
+            cipherText = blockModel.InitialPermutation(cipherText);
+            var twoBlockOfPlainText = blockModel.SplitBlockIntoStrings(cipherText);
+            for (var round = 1; round <= 16; round++)
+            {
+
+                twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
+                    keyModel.GetKey(round));
+            }
+            var plaintText = blockModel.ConvertBinariesToText(blockModel.InverseInitialPermutation(twoBlockOfPlainText[0] + twoBlockOfPlainText[1]));
+
+            return plaintText;
+
         }
     }
 }

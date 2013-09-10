@@ -34,5 +34,14 @@ namespace Assigment_1_Tests
             var cipherText = _logic.Encrypt(plainText, key);
             Assert.AreNotEqual(plainText, cipherText);
         }
+
+        [Test]
+        public void InsertCipherText()
+        {
+            var cipherText = "ଉȍ؋Є܏ȅ̌༈";
+            var key = "12345678";
+            var plaintText = _logic.Decrypt(cipherText, key);
+            Assert.AreEqual(plaintText, "abc123av");
+        }
     }
 }

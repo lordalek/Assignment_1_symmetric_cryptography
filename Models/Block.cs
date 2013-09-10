@@ -44,7 +44,7 @@ namespace Models
             string inputLetter = inputChar.ToString(CultureInfo.InvariantCulture);
             if (string.IsNullOrEmpty(inputLetter))
                 throw new NullReferenceException("inputLetter is null or empty");
-            var byteArray = Encoding.UTF8.GetBytes(inputLetter);
+            var byteArray = Encoding.Unicode.GetBytes(inputLetter);
             byteArray = byteArray.Reverse().ToArray();
             var sb = new StringBuilder();
             foreach (var b in byteArray)
@@ -70,9 +70,9 @@ namespace Models
             sb.Append(ConvertBinaryToLetter(binary.Substring(48, 8)));
             sb.Append(ConvertBinaryToLetter(binary.Substring(56, 8)));
             //var bytes = BitConverter.GetBytes(Convert.ToInt64(binary, 2)).Reverse().ToArray();
-            //var test1 = Encoding.UTF8.GetString(bytes);
+            //var test1 = Encoding.Unicode.GetString(bytes);
             ////var test = Convert.ToBase64String(bytes);
-            //return Encoding.UTF8.GetString(hex);
+            //return Encoding.Unicode.GetString(hex);
             return sb.ToString();
         }
 
