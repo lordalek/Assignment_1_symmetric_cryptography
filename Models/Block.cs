@@ -44,7 +44,7 @@ namespace Models
             string inputLetter = inputChar.ToString(CultureInfo.InvariantCulture);
             if (string.IsNullOrEmpty(inputLetter))
                 throw new NullReferenceException("inputLetter is null or empty");
-            var byteArray = Encoding.Unicode.GetBytes(inputLetter);
+            var byteArray = Encoding.UTF8.GetBytes(inputLetter);
             byteArray = byteArray.Reverse().ToArray();
             var sb = new StringBuilder();
             foreach (var b in byteArray)
@@ -81,25 +81,29 @@ namespace Models
             if (binary == null) throw new ArgumentNullException("binary");
             if (binary.Length != 8)
                 return "-1";
-            var bytes = ConvertHexToByte(ConvertBinaryToHex(binary));
-            var text = Encoding.Unicode.GetString(bytes);
+            //var bytes = ConvertHexToByte(ConvertBinaryToHex(binary));
+            var bytes = ConvertBinaryToByte(binary);
+            var text = Encoding.Default.GetString(new []{bytes});
             return text;
         }
 
-        public byte[] convertToByteArray(string bins)
+        public byte ConvertBinaryToByte(string binary)
         {
-            var bytes = new byte[1];
-            bytes[0] = Convert.ToByte(bins);
-            return bytes;
+            var dec = Convert.ToInt32(binary, 2);
+            return Byte.Parse(dec.ToString());
         }
-
+      
         public byte[] ConvertHexToByte(string hex)
         {
             int NumberChars = hex.Length;
             var bytes = new byte[NumberChars/2];
             for (int i = 0; i < NumberChars; i += 2)
                 bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
-            return bytes;
+            //byte but = (byte) "0x" + bytes[1] + bytes[0];
+            //byte but = (byte) bytes[1] + (byte) bytes[0];
+            var bytu = byte.Parse(hex[1].ToString() + hex[3].ToString());
+            var bytuu = new byte[] { byte.Parse(hex[1].ToString() + hex[3].ToString()) };
+            return bytuu;
         }
 
         public string ConvertStringToBinaryString(string inputString)

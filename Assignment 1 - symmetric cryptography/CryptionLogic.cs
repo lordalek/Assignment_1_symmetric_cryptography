@@ -45,7 +45,7 @@ namespace Assignment_1_symmetric_cryptography
                 twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
                     keyModel.GetKey(round));
             }
-            var cipherText = blockModel.ConvertBinariesToText(blockModel.InverseInitialPermutation(twoBlockOfPlainText[0] + twoBlockOfPlainText[1]));
+            var cipherText = blockModel.ConvertBinariesToText(blockModel.InverseInitialPermutation(twoBlockOfPlainText[1] + twoBlockOfPlainText[0]));
             
             return cipherText;
         }
@@ -63,7 +63,7 @@ namespace Assignment_1_symmetric_cryptography
             cipherText = blockModel.ConvertStringToBinaryString(cipherText);
             cipherText = blockModel.InitialPermutation(cipherText);
             var twoBlockOfPlainText = blockModel.SplitBlockIntoStrings(cipherText);
-            for (var round = 1; round <= 16; round++)
+            for (var round = 16; round > 0; round--)
             {
 
                 twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
