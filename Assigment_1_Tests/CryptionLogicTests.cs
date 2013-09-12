@@ -102,5 +102,14 @@ namespace Assigment_1_Tests
             var plain = "abcdfeqe";
             Assert.AreEqual(plain, _logic.Decrypt(manual, key));
         }
+
+        [Test]
+        public void TEstManualDecrypt()
+        {
+            var cipher = "1110001001101010111000100101011111000010111010001110111000001010";
+            var key = "12345678";
+            var plain = "abcdfeqe";
+            Assert.AreEqual(_block.ConvertStringToBinaryString(plain), _logic.DecryptManual(_logic.Encrypt(plain,key),  key));
+        }
     }
 }

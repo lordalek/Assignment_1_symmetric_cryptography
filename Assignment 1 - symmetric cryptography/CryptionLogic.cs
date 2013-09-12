@@ -8,10 +8,10 @@ namespace Assignment_1_symmetric_cryptography
     {
         public string[] PermutateTwoBlocks(string[] blocks)
         {
-           if(string.IsNullOrEmpty(blocks[0]))
-               throw  new Exception("Blocks is null or empty");
+            if (string.IsNullOrEmpty(blocks[0]))
+                throw new Exception("Blocks is null or empty");
             var permutatedBlocks = new string[2];
-            if(blocks.Length <= 1)
+            if (blocks.Length <= 1)
                 throw new Exception("Blocks only contains one block");
 
             permutatedBlocks[0] = blocks[1];
@@ -30,7 +30,7 @@ namespace Assignment_1_symmetric_cryptography
             if (keyString64Bit == null) throw new ArgumentNullException("keyString64Bit");
 
             //Check that input has 8 bytes of data
-            if(plaintext64Bit.Length < 8 || keyString64Bit.Length < 8)
+            if (plaintext64Bit.Length < 8 || keyString64Bit.Length < 8)
                 throw new Exception("Invalid plaintext or key length.");
 
             var keyModel = new CryptionKey();
@@ -47,7 +47,6 @@ namespace Assignment_1_symmetric_cryptography
             int idx = 1;
             for (var round = 1; round <= 16; round++)
             {
-
                 twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
                     keyModel.GetKey(round));
                 shadowCopyLeft[idx] = twoBlockOfPlainText[0];
@@ -62,7 +61,7 @@ namespace Assignment_1_symmetric_cryptography
         {
             var keyModel = new CryptionKey();
             var blockModel = new Block();
-            keyModel.SetKey(key,false);
+            keyModel.SetKey(key, false);
             var bin = blockModel.ConvertStringToBinaryString(plaintText);
             var permutedBin = blockModel.InitialPermutation(bin);
             var permutedbinBlocks = blockModel.SplitBlockIntoStrings(permutedBin);
@@ -73,7 +72,7 @@ namespace Assignment_1_symmetric_cryptography
             for (int i = 1; i <= 16; i++)
             {
                 var roundBin = blockModel.ExecuteRound(leftSide[i - 1], rightSide[i - 1], keyModel.GetKey(i));
-                leftSide[i] = rightSide[i -1];
+                leftSide[i] = rightSide[i - 1];
                 rightSide[i] = roundBin[0];
             }
             var cipherText = blockModel.InverseInitialPermutation(leftSide[16] + rightSide[16]);
@@ -95,17 +94,37 @@ namespace Assignment_1_symmetric_cryptography
             var twoBlockOfPlainText = blockModel.SplitBlockIntoStrings(cipherText);
             for (var round = 16; round > 0; round--)
             {
-
                 twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
                     keyModel.GetKey(round));
             }
             //var plaintText = blockModel.ConvertBinariesToText(blockModel.InverseInitialPermutation(twoBlockOfPlainText[0] + twoBlockOfPlainText[1]));
-            
+
             var plaintText = blockModel.InitialPermutation(twoBlockOfPlainText[1] + twoBlockOfPlainText[0]);
 
             var text = blockModel.ConvertBinariesToText(plaintText);
-            return text;
+            return plaintText;
+        }
 
+        public string DecryptManual(string ciper, string key)
+        {
+            var keyModel = new CryptionKey();
+            var blockModel = new Block();
+            keyModel.SetKey(key, false);
+            var bin = blockModel.ConvertStringToBinaryString(ciper);
+            var permutedBin = blockModel.InitialPermutation(bin);
+            var permutedbinBlocks = blockModel.SplitBlockIntoStrings(permutedBin);
+            var leftSide = new string[17];
+            leftSide[16] = permutedbinBlocks[0];
+            var rightSide = new string[17];
+            rightSide[16] = permutedbinBlocks[1];
+            for (int i = 16; i >= 1; i--)
+            {
+                var roundBin = blockModel.ExecuteRound(leftSide[i], rightSide[i], keyModel.GetKey(i));
+                leftSide[i - 1] = rightSide[i];
+                rightSide[i - 1] = roundBin[0];
+            }
+            var cipherText = blockModel.InverseInitialPermutation(rightSide[1] + leftSide[1]);
+            return cipherText;
         }
     }
 }
