@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Models
                 throw new Exception("inputBlock length is too long.");
             //var binarys = ConvertStringToBinaryString(inputBlock);
             string[] blocks;
-            if (inputBlock.Length <= BlockSize/2)
+            if (inputBlock.Length <= BlockSize / 2)
             {
                 blocks = new string[1];
                 blocks[0] = inputBlock;
@@ -31,10 +32,10 @@ namespace Models
             else
             {
                 blocks = new string[2];
-                blocks[0] = inputBlock.Substring(0, BlockSize/2);
-                blocks[1] = inputBlock.Substring(BlockSize/2, BlockSize/2);
+                blocks[0] = inputBlock.Substring(0, BlockSize / 2);
+                blocks[1] = inputBlock.Substring(BlockSize / 2, BlockSize / 2);
                 //make sure block is 32 bits long.
-                blocks[1] = blocks[1].PadRight(BlockSize/2, '0');
+                blocks[1] = blocks[1].PadRight(BlockSize / 2, '0');
             }
             return blocks;
         }
@@ -83,8 +84,9 @@ namespace Models
                 return "-1";
             //var bytes = ConvertHexToByte(ConvertBinaryToHex(binary));
             var bytes = ConvertBinaryToByte(binary);
-            var text = Encoding.Default.GetString(new []{bytes});
-            return text;
+            var text = Encoding.UTF8.GetString(new[] { bytes });
+            var charLetter = (char) bytes;
+            return charLetter.ToString();
         }
 
         public byte ConvertBinaryToByte(string binary)
@@ -92,13 +94,13 @@ namespace Models
             var dec = Convert.ToInt32(binary, 2);
             return Byte.Parse(dec.ToString());
         }
-      
+
         public byte[] ConvertHexToByte(string hex)
         {
             int NumberChars = hex.Length;
-            var bytes = new byte[NumberChars/2];
+            var bytes = new byte[NumberChars / 2];
             for (int i = 0; i < NumberChars; i += 2)
-                bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             //byte but = (byte) "0x" + bytes[1] + bytes[0];
             //byte but = (byte) bytes[1] + (byte) bytes[0];
             var bytu = byte.Parse(hex[1].ToString() + hex[3].ToString());
@@ -239,13 +241,13 @@ namespace Models
             if (roundKey == null) throw new ArgumentNullException("roundKey");
             var processedText = new string[2];
             processedText[0] = right32BitText;
-            right32BitText = Expand32BitTextInto48BitText(right32BitText);
+            var rightSide = Expand32BitTextInto48BitText(right32BitText);
             //Now 48 bit text string
-            right32BitText = XORTwoBinaryStrings(right32BitText, roundKey);
-            right32BitText = Substitute48BitTextInto32BitTextUsingSBox(right32BitText);
-            right32BitText = Permutate32BitText(right32BitText);
-            right32BitText = XORTwoBinaryStrings(left32BitText, right32BitText);
-            processedText[1] = right32BitText;
+            rightSide = XORTwoBinaryStrings(rightSide, roundKey);
+            rightSide = Substitute48BitTextInto32BitTextUsingSBox(rightSide);
+            rightSide = Permutate32BitText(rightSide);
+            rightSide = XORTwoBinaryStrings(left32BitText, rightSide);
+            processedText[1] = rightSide;
             return processedText;
         }
 

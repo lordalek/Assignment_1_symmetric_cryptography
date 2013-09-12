@@ -5,7 +5,8 @@ using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace Assigment_1_Tests
 {
-    class CryptionLogicTests
+    [TestFixture]
+    public class CryptionLogicTests
     {
         private CryptionLogic _logic;
 
@@ -42,6 +43,26 @@ namespace Assigment_1_Tests
             var key = "12345678";
             var plaintText = _logic.Decrypt(cipherText, key);
             Assert.AreEqual(plaintText, "abc123av");
+        }
+
+        [Test]
+        public void InsertAndExtract()
+        {
+            var plain = "abcdfeqe";
+            var key = "12345678";
+            var cryptedPlainBin = "1101000110010101110100011010101111000001110101001101110100000101";
+            Assert.AreEqual(_logic.Encrypt(plain, key), cryptedPlainBin);
+            //Assert.AreEqual(_logic.Decrypt(cryptedPlainBin, key), plain);
+        }
+
+        [Test]
+        public void InsertBinExpectBin()
+        {
+            var cryptedPlainBin = "1101000110010101110100011010101111000001110101001101110100000101";
+            var plainBin = "0110000101100010011000110110010001100110011001010111000101100101";
+
+            var key = "12345678";
+            Assert.AreEqual(plainBin, _logic.Decrypt(cryptedPlainBin, key));
         }
     }
 }

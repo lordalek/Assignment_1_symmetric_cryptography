@@ -45,7 +45,7 @@ namespace Assignment_1_symmetric_cryptography
                 twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
                     keyModel.GetKey(round));
             }
-            var cipherText = blockModel.ConvertBinariesToText(blockModel.InverseInitialPermutation(twoBlockOfPlainText[1] + twoBlockOfPlainText[0]));
+            var cipherText = blockModel.InverseInitialPermutation(twoBlockOfPlainText[1] + twoBlockOfPlainText[0]);
             
             return cipherText;
         }
@@ -54,23 +54,26 @@ namespace Assignment_1_symmetric_cryptography
         {
             if (cipherText == null) throw new ArgumentNullException("cipherText");
             if (key == null) throw new ArgumentNullException("key");
-            if (cipherText.Length < 8 || key.Length < 8)
+            if (cipherText.Length < 64 || key.Length < 8)
                 throw new Exception("Invalid plaintext or key length.");
 
             var keyModel = new CryptionKey();
             var blockModel = new Block();
             keyModel.SetKey(key, true);
-            cipherText = blockModel.ConvertStringToBinaryString(cipherText);
-            cipherText = blockModel.InitialPermutation(cipherText);
+            //cipherText = blockModel.ConvertStringToBinaryString(cipherText);
+            cipherText = blockModel.InverseInitialPermutation(cipherText);
             var twoBlockOfPlainText = blockModel.SplitBlockIntoStrings(cipherText);
             for (var round = 16; round > 0; round--)
             {
 
-                twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
+                twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[1], twoBlockOfPlainText[0],
                     keyModel.GetKey(round));
             }
-            var plaintText = blockModel.ConvertBinariesToText(blockModel.InverseInitialPermutation(twoBlockOfPlainText[0] + twoBlockOfPlainText[1]));
+            //var plaintText = blockModel.ConvertBinariesToText(blockModel.InverseInitialPermutation(twoBlockOfPlainText[0] + twoBlockOfPlainText[1]));
+            
+            var plaintText = blockModel.InitialPermutation(twoBlockOfPlainText[0] + twoBlockOfPlainText[1]);
 
+            var text = blockModel.ConvertBinariesToText(plaintText);
             return plaintText;
 
         }

@@ -34,7 +34,7 @@ namespace GUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Something happend. Error: " + Environment.NewLine, "Error", MessageBoxButtons.OK,
+                MessageBox.Show("Something happend. Error: " + Environment.NewLine + ex.Message, "Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
         }
@@ -43,20 +43,32 @@ namespace GUI
         {
             try
             {
-                if (this.txtTextField.Text.Trim().Length != 8 || this.txtKeyField.Text.Trim().Length != 8)
+                if (this.txtCipherText.Text.Trim().Length != 64 || this.txtKeyField.Text.Trim().Length != 8)
                     return;
 
                 var crpytionLogic = new CryptionLogic();
-                this.rTxtOutput.AppendText(DateTime.Now.ToLongTimeString() + " Decrypt: " + this.txtTextField.Text.Trim() + " Key: " + this.txtKeyField.Text.Trim());
+                this.rTxtOutput.AppendText(DateTime.Now.ToLongTimeString() + " Decrypt: " + this.txtCipherText.Text.Trim() + " Key: " + this.txtKeyField.Text.Trim());
                 this.rTxtOutput.AppendText(Environment.NewLine);
-                this.rTxtOutput.AppendText("Output: " + crpytionLogic.Decrypt(this.txtTextField.Text.Trim(), this.txtKeyField.Text.Trim()));
+                this.rTxtOutput.AppendText("Output: " + crpytionLogic.Decrypt(this.txtCipherText.Text.Trim(), this.txtKeyField.Text.Trim()));
                 this.rTxtOutput.AppendText(Environment.NewLine);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Something happend. Error: " + Environment.NewLine, "Error", MessageBoxButtons.OK,
+                MessageBox.Show("Something happend. Error: " + Environment.NewLine + ex.Message, "Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+        }
+
+        private void textBox1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (txtCipherText.Text.Trim().Length > 0)
+                lbCiptherTextCount.Text = txtCipherText.Text.Trim().Length.ToString();
+            }
+
+        private void txtTextField_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (txtTextField.Text.Trim().Length > 0)
+                lbPlaintTextCount.Text = txtTextField.Text.Trim().Length.ToString();
         }
     }
 }
