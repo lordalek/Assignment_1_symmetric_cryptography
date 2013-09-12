@@ -22,31 +22,31 @@ namespace Assigment_1_Tests
         [Test]
         public void Insert40bitString_expect2blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("abcde").Length == 2);
+            Assert.IsTrue(_block.SplitBlockIntoStrings(_block.ConvertStringToBinaryString("abcde")).Length == 2);
         }
 
         [Test]
         public void Insert48bitString_expect2blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("abcdef").Length == 2);
+            Assert.IsTrue(_block.SplitBlockIntoStrings(_block.ConvertStringToBinaryString("abcdef")).Length == 2);
         }
 
         [Test]
         public void Insert56bitString_expect2blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("abc123").Length == 2);
+            Assert.IsTrue(_block.SplitBlockIntoStrings(_block.ConvertStringToBinaryString("abc123")).Length == 2);
         }
 
         [Test]
         public void Insert64bitString_expect2blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("abcde12").Length == 2);
+            Assert.IsTrue(_block.SplitBlockIntoStrings(_block.ConvertStringToBinaryString("abcde12")).Length == 2);
         }
 
         [Test]
         public void Insert24bitString_expect1blocks()
         {
-            Assert.IsTrue(_block.SplitBlockIntoStrings("abc").Length == 1);
+            Assert.IsTrue(_block.SplitBlockIntoStrings(_block.ConvertStringToBinaryString("abc")).Length == 1);
         }
 
         [Test]
@@ -132,6 +132,26 @@ namespace Assigment_1_Tests
             var AasBinary = _block.ConvertStringToBinaryString("ABCabc12");
             var letterA = _block.ConvertBinariesToText(AasBinary);
             Assert.AreEqual(letterA, "ABCabc12");
+        }
+
+        [Test]
+        public void ChecckThatIpisIIP()
+        {
+            var plainText = "abcd1234";
+            var plainBin = _block.ConvertStringToBinaryString(plainText);
+            var IPbin = _block.InitialPermutation(plainBin);
+            var IIPbin = _block.InverseInitialPermutation(IPbin);
+            Assert.AreEqual(plainBin, IIPbin);
+        }
+
+        [Test]
+        public void BS()
+        {
+            //var bin = "123abcdefghijklmnioqrstuw1234567890!#¤%&/()=:;<>_.,'*¨*`)(/&%¤#¤";
+            var bin = "0011000000000000000000000000000000000000000000000000000000000000";
+            var binIP = _block.InitialPermutation(bin);
+            var binIIP = _block.InverseInitialPermutation(binIP);
+            Assert.AreEqual(bin, binIIP);
         }
     }
 }

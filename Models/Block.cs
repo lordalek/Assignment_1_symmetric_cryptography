@@ -33,7 +33,7 @@ namespace Models
             {
                 blocks = new string[2];
                 blocks[0] = inputBlock.Substring(0, BlockSize / 2);
-                blocks[1] = inputBlock.Substring(BlockSize / 2, BlockSize / 2);
+                blocks[1] = inputBlock.Substring(BlockSize / 2, inputBlock.Length - (BlockSize / 2));
                 //make sure block is 32 bits long.
                 blocks[1] = blocks[1].PadRight(BlockSize / 2, '0');
             }
@@ -86,7 +86,7 @@ namespace Models
             var bytes = ConvertBinaryToByte(binary);
             var text = Encoding.UTF8.GetString(new[] { bytes });
             var charLetter = (char) bytes;
-            return charLetter.ToString();
+            return text;
         }
 
         public byte ConvertBinaryToByte(string binary)
@@ -240,14 +240,14 @@ namespace Models
             if (right32BitText == null) throw new ArgumentNullException("right32BitText");
             if (roundKey == null) throw new ArgumentNullException("roundKey");
             var processedText = new string[2];
-            processedText[0] = right32BitText;
+            processedText[1] = right32BitText;
             var rightSide = Expand32BitTextInto48BitText(right32BitText);
             //Now 48 bit text string
             rightSide = XORTwoBinaryStrings(rightSide, roundKey);
             rightSide = Substitute48BitTextInto32BitTextUsingSBox(rightSide);
             rightSide = Permutate32BitText(rightSide);
             rightSide = XORTwoBinaryStrings(left32BitText, rightSide);
-            processedText[1] = rightSide;
+            processedText[0] = rightSide;
             return processedText;
         }
 

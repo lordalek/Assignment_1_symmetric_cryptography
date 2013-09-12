@@ -9,11 +9,13 @@ namespace Assigment_1_Tests
     public class CryptionLogicTests
     {
         private CryptionLogic _logic;
+        private Block _block;
 
         [SetUp]
         public void Init()
         {
             _logic = new CryptionLogic();
+            _block = new Block();
         }
 
         [Test]
@@ -39,10 +41,10 @@ namespace Assigment_1_Tests
         [Test]
         public void InsertCipherText()
         {
-            var cipherText = "ଉȍ؋Є܏ȅ̌༈";
+            var cipherText = "1011000000111011000110110001001010110001101110111001000010010001";
             var key = "12345678";
             var plaintText = _logic.Decrypt(cipherText, key);
-            Assert.AreEqual(plaintText, "abc123av");
+            Assert.AreEqual(_block.ConvertStringToBinaryString("abc123av"), plaintText);
         }
 
         [Test]
@@ -58,11 +60,47 @@ namespace Assigment_1_Tests
         [Test]
         public void InsertBinExpectBin()
         {
-            var cryptedPlainBin = "1101000110010101110100011010101111000001110101001101110100000101";
-            var plainBin = "0110000101100010011000110110010001100110011001010111000101100101";
-
+            var plainText = "abcd1234";
             var key = "12345678";
-            Assert.AreEqual(plainBin, _logic.Decrypt(cryptedPlainBin, key));
+            Assert.AreEqual(_block.ConvertStringToBinaryString(plainText),
+                _logic.Decrypt(_logic.Encrypt(plainText, key), key));
+        }
+
+        [Test]
+        public void testManualEncrpytion()
+        {
+            var plain = "abcdfeqe";
+            var key = "12345678";
+            var cipher = _logic.EncryptManual(plain, key);
+            Assert.IsTrue(cipher.Length == 64);
+        }
+
+        [Test]
+        public void AssureOutPutOfEncryptAndManualEncryptAreEqual()
+        {
+            var manual = "1110001001101010111000100101011111000010111010001110111000001010";
+            var plain = "abcdfeqe";
+            var key = "12345678";
+            var cipher = _logic.Encrypt(plain, key);
+            Assert.AreEqual(manual, cipher);
+        }
+
+        [Test]
+        public void testmanualecnrytAndDecrypt()
+        {
+            var manual = "1110001001101010111000100101011111000010111010001110111000001010";
+            var key = "12345678";
+            var plain = _block.ConvertStringToBinaryString("abcdfeqe");
+            Assert.AreEqual(plain, _logic.Decrypt(manual, key));
+        }
+
+        [Test]
+        public void testmanualecnrytAndDecryptasText()
+        {
+            var manual = "1110001001101010111000100101011111000010111010001110111000001010";
+            var key = "12345678";
+            var plain = "abcdfeqe";
+            Assert.AreEqual(plain, _logic.Decrypt(manual, key));
         }
     }
 }
