@@ -38,15 +38,45 @@ namespace Assignment_1_symmetric_cryptography
             keyModel.SetKey(keyString64Bit, false);
             plaintext64Bit = blockModel.ConvertStringToBinaryString(plaintext64Bit);
             plaintext64Bit = blockModel.InitialPermutation(plaintext64Bit);
+            var shadowCopyLeft = new string[36];
+            var shadowCopyRight = new string[36];
             var twoBlockOfPlainText = blockModel.SplitBlockIntoStrings(plaintext64Bit);
+            shadowCopyLeft[0] = twoBlockOfPlainText[0];
+            shadowCopyRight[0] = shadowCopyRight[0];
+
+            int idx = 1;
             for (var round = 1; round <= 16; round++)
             {
 
                 twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
                     keyModel.GetKey(round));
+                shadowCopyLeft[idx] = twoBlockOfPlainText[0];
+                shadowCopyRight[idx] = twoBlockOfPlainText[1];
+                idx ++;
             }
             var cipherText = blockModel.InverseInitialPermutation(twoBlockOfPlainText[1] + twoBlockOfPlainText[0]);
-            
+            return cipherText;
+        }
+
+        public string EncryptManual(string plaintText, string key)
+        {
+            var keyModel = new CryptionKey();
+            var blockModel = new Block();
+            keyModel.SetKey(key,false);
+            var bin = blockModel.ConvertStringToBinaryString(plaintText);
+            var permutedBin = blockModel.InitialPermutation(bin);
+            var permutedbinBlocks = blockModel.SplitBlockIntoStrings(permutedBin);
+            var leftSide = new string[17];
+            leftSide[0] = permutedbinBlocks[0];
+            var rightSide = new string[17];
+            rightSide[0] = permutedbinBlocks[1];
+            for (int i = 1; i <= 16; i++)
+            {
+                var roundBin = blockModel.ExecuteRound(leftSide[i - 1], rightSide[i - 1], keyModel.GetKey(i));
+                leftSide[i] = rightSide[i -1];
+                rightSide[i] = roundBin[0];
+            }
+            var cipherText = blockModel.InverseInitialPermutation(leftSide[16] + rightSide[16]);
             return cipherText;
         }
 
@@ -59,22 +89,22 @@ namespace Assignment_1_symmetric_cryptography
 
             var keyModel = new CryptionKey();
             var blockModel = new Block();
-            keyModel.SetKey(key, true);
+            keyModel.SetKey(key, false);
             //cipherText = blockModel.ConvertStringToBinaryString(cipherText);
             cipherText = blockModel.InverseInitialPermutation(cipherText);
             var twoBlockOfPlainText = blockModel.SplitBlockIntoStrings(cipherText);
             for (var round = 16; round > 0; round--)
             {
 
-                twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[1], twoBlockOfPlainText[0],
+                twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
                     keyModel.GetKey(round));
             }
             //var plaintText = blockModel.ConvertBinariesToText(blockModel.InverseInitialPermutation(twoBlockOfPlainText[0] + twoBlockOfPlainText[1]));
             
-            var plaintText = blockModel.InitialPermutation(twoBlockOfPlainText[0] + twoBlockOfPlainText[1]);
+            var plaintText = blockModel.InitialPermutation(twoBlockOfPlainText[1] + twoBlockOfPlainText[0]);
 
             var text = blockModel.ConvertBinariesToText(plaintText);
-            return plaintText;
+            return text;
 
         }
     }
