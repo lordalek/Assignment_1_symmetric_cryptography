@@ -123,7 +123,7 @@ namespace Assignment_1_symmetric_cryptography
                 leftSide[i - 1] = rightSide[i];
                 rightSide[i - 1] = roundBin[0];
             }
-            var cipherText = blockModel.InverseInitialPermutation(rightSide[1] + leftSide[1]);
+            var cipherText = blockModel.InverseInitialPermutation(rightSide[0] + leftSide[1]);
             return cipherText;
         }
     }
