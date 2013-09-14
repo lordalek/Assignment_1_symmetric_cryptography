@@ -28,7 +28,7 @@ namespace GUI
                 var crpytionLogic = new CryptionLogic();
                 this.rTxtOutput.AppendText(DateTime.Now.ToLongTimeString() + " Encrypt: " + this.txtTextField.Text.Trim() + " Key: " + this.txtKeyField.Text.Trim());
                 this.rTxtOutput.AppendText(Environment.NewLine);
-                this.rTxtOutput.AppendText("Output: " + crpytionLogic.Encrypt(this.txtTextField.Text.Trim(), this.txtKeyField.Text.Trim()));
+                this.rTxtOutput.AppendText("Output: " + crpytionLogic.EncryptManual(this.txtTextField.Text.Trim(), this.txtKeyField.Text.Trim()));
                 this.rTxtOutput.AppendText(Environment.NewLine);
 
             }
@@ -49,7 +49,7 @@ namespace GUI
                 var crpytionLogic = new CryptionLogic();
                 this.rTxtOutput.AppendText(DateTime.Now.ToLongTimeString() + " Decrypt: " + this.txtCipherText.Text.Trim() + " Key: " + this.txtKeyField.Text.Trim());
                 this.rTxtOutput.AppendText(Environment.NewLine);
-                this.rTxtOutput.AppendText("Output: " + crpytionLogic.Decrypt(this.txtCipherText.Text.Trim(), this.txtKeyField.Text.Trim()));
+                this.rTxtOutput.AppendText("Output: " + crpytionLogic.DecryptManual(this.txtCipherText.Text.Trim(), this.txtKeyField.Text.Trim()));
                 this.rTxtOutput.AppendText(Environment.NewLine);
             }
             catch (Exception ex)

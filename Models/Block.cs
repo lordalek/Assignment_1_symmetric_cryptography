@@ -233,21 +233,18 @@ namespace Models
             return sb.ToString();
         }
 
-        public string[] ExecuteRound([NotNull] string left32BitText, [NotNull] string right32BitText,
+        public string ExecuteFunctionF([NotNull] string right32BitText,
             [NotNull] string roundKey)
         {
-            if (left32BitText == null) throw new ArgumentNullException("left32BitText");
             if (right32BitText == null) throw new ArgumentNullException("right32BitText");
             if (roundKey == null) throw new ArgumentNullException("roundKey");
-            var processedText = new string[2];
-            processedText[1] = right32BitText;
+            string processedText;
             var rightSide = Expand32BitTextInto48BitText(right32BitText);
             //Now 48 bit text string
-            rightSide = XORTwoBinaryStrings(rightSide, roundKey);
-            rightSide = Substitute48BitTextInto32BitTextUsingSBox(rightSide);
-            rightSide = Permutate32BitText(rightSide);
-            rightSide = XORTwoBinaryStrings(left32BitText, rightSide);
-            processedText[0] = rightSide;
+            var XORedInputAndKey = XORTwoBinaryStrings(rightSide, roundKey);
+            var SBoxed32BitBinary = Substitute48BitTextInto32BitTextUsingSBox(XORedInputAndKey);
+            var Permuted32BitBIn = Permutate32BitText(SBoxed32BitBinary);
+            processedText = Permuted32BitBIn;
             return processedText;
         }
 

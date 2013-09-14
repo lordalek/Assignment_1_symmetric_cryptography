@@ -24,6 +24,12 @@ namespace Assignment_1_symmetric_cryptography
             return string.Empty;
         }
 
+        /// <summary>
+        /// @Decprecated
+        /// </summary>
+        /// <param name="plaintext64Bit"></param>
+        /// <param name="keyString64Bit"></param>
+        /// <returns></returns>
         public string Encrypt(string plaintext64Bit, string keyString64Bit)
         {
             if (plaintext64Bit == null) throw new ArgumentNullException("plaintext64Bit");
@@ -43,17 +49,14 @@ namespace Assignment_1_symmetric_cryptography
             var twoBlockOfPlainText = blockModel.SplitBlockIntoStrings(plaintext64Bit);
             shadowCopyLeft[0] = twoBlockOfPlainText[0];
             shadowCopyRight[0] = shadowCopyRight[0];
-
-            int idx = 1;
             for (var round = 1; round <= 16; round++)
             {
-                twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
+                shadowCopyLeft[round] = shadowCopyRight[round];
+                var roundedBinaries = blockModel.ExecuteFunctionF(shadowCopyRight[round - 1],
                     keyModel.GetKey(round));
-                shadowCopyLeft[idx] = twoBlockOfPlainText[0];
-                shadowCopyRight[idx] = twoBlockOfPlainText[1];
-                idx ++;
+                shadowCopyRight[round] = blockModel.XORTwoBinaryStrings(roundedBinaries, shadowCopyLeft[round - 1]);
             }
-            var cipherText = blockModel.InverseInitialPermutation(twoBlockOfPlainText[1] + twoBlockOfPlainText[0]);
+            var cipherText = blockModel.InverseInitialPermutation(shadowCopyLeft[16] + shadowCopyRight[16]);
             return cipherText;
         }
 
@@ -71,14 +74,20 @@ namespace Assignment_1_symmetric_cryptography
             rightSide[0] = permutedbinBlocks[1];
             for (int i = 1; i <= 16; i++)
             {
-                var roundBin = blockModel.ExecuteRound(leftSide[i - 1], rightSide[i - 1], keyModel.GetKey(i));
+                var roundBin = blockModel.ExecuteFunctionF(rightSide[i - 1], keyModel.GetKey(i));
                 leftSide[i] = rightSide[i - 1];
-                rightSide[i] = roundBin[0];
+                rightSide[i] = roundBin;
             }
             var cipherText = blockModel.InverseInitialPermutation(leftSide[16] + rightSide[16]);
             return cipherText;
         }
 
+        /// <summary>
+        /// @Deprecated
+        /// </summary>
+        /// <param name="cipherText"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public string Decrypt([NotNull] string cipherText, [NotNull] string key)
         {
             if (cipherText == null) throw new ArgumentNullException("cipherText");
@@ -94,8 +103,8 @@ namespace Assignment_1_symmetric_cryptography
             var twoBlockOfPlainText = blockModel.SplitBlockIntoStrings(cipherText);
             for (var round = 16; round > 0; round--)
             {
-                twoBlockOfPlainText = blockModel.ExecuteRound(twoBlockOfPlainText[0], twoBlockOfPlainText[1],
-                    keyModel.GetKey(round));
+                //twoBlockOfPlainText = blockModel.ExecuteFunctionF(twoBlockOfPlainText[1],
+                //    keyModel.GetKey(round));
             }
             //var plaintText = blockModel.ConvertBinariesToText(blockModel.InverseInitialPermutation(twoBlockOfPlainText[0] + twoBlockOfPlainText[1]));
 
@@ -119,9 +128,9 @@ namespace Assignment_1_symmetric_cryptography
             rightSide[16] = permutedbinBlocks[1];
             for (int i = 16; i >= 1; i--)
             {
-                var roundBin = blockModel.ExecuteRound(leftSide[i], rightSide[i], keyModel.GetKey(i));
+                var roundBin = blockModel.ExecuteFunctionF(rightSide[i], keyModel.GetKey(i));
                 leftSide[i - 1] = rightSide[i];
-                rightSide[i - 1] = roundBin[0];
+                rightSide[i - 1] = roundBin;
             }
             var cipherText = blockModel.InverseInitialPermutation(rightSide[0] + leftSide[1]);
             return cipherText;

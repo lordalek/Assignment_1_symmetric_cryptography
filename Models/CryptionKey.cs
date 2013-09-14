@@ -121,6 +121,16 @@ namespace Models
             }
         }
 
+        public string GenerateSubKey([NotNull] string leftSide, [NotNull] string rightSide, int round)
+        {
+            leftSide = ShiftUsingSB(leftSide, round, false);
+            rightSide = ShiftUsingSB(rightSide, round, false);
+            _shiftedKeysLeftSide[round - 1] = leftSide;
+            _shiftedKeysRightSide[round - 1] = rightSide;
+            leftSide = PerformPC2(leftSide + rightSide);
+            return leftSide;
+        }
+
         public string GetSevenBitsInKey(string inputKey)
         {
             if (inputKey.Length != 64)
@@ -184,12 +194,12 @@ namespace Models
         }
 
         /// <summary>
-        /// Deprecated
+        /// @Deprecated
         /// </summary>
         /// <param name="inputKey"></param>
         /// <param name="roundNumber"></param>
         /// <param name="isInverse"></param>
-        /// <returns></returns>
+        /// <returns></returns> 
         public string ShiftKey(string inputKey, int roundNumber, bool isInverse)
         {
             int shiftDistance = ScheduledLeftShifts[roundNumber];

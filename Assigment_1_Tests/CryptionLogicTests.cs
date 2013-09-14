@@ -100,7 +100,7 @@ namespace Assigment_1_Tests
             var manual = "1110001001101010111000100101011111000010111010001110111000001010";
             var key = "12345678";
             var plain = "abcdfeqe";
-            Assert.AreEqual(plain, _logic.Decrypt(manual, key));
+            Assert.AreEqual(_block.ConvertStringToBinaryString(plain), _logic.DecryptManual(manual, key));
         }
 
         [Test]

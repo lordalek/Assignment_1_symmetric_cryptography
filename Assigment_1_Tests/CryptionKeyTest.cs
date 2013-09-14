@@ -13,7 +13,7 @@ namespace Assigment_1_Tests
         {
             _cryptionKey = new CryptionKey();
             _cryptionKey.SetKey("1isAKey1", false);
-           
+
         }
 
         [Test]
@@ -62,9 +62,38 @@ namespace Assigment_1_Tests
             Assert.IsNotNull(keys[5]);
             Assert.IsNotNull(keys[6]);
             Assert.IsNotNull(keys[10]);
-            Assert.IsNotNull(keys[11]); 
+            Assert.IsNotNull(keys[11]);
             Assert.IsNotNull(keys[15]);
             Assert.IsNotNull(keys[0]);
+        }
+
+        [Test]
+        public void CheckThatKeysGetPermutated_1()
+        {
+            var Lkey = "1234567890abcdefghijklmnopqr";
+            var RKey = "abcdefghijklmnopqr1234567890";
+            var pt1 = _cryptionKey.PerformPC2("234567890abcdefghijklmnopqr1bcdefghijklmnopqr1234567890a");
+            var st1 = _cryptionKey.GenerateSubKey(Lkey, RKey, 1);
+            Assert.AreEqual(pt1, st1);
+        }
+
+        [Test]
+        public void CheckThatKeysGetPermutated_2()
+        {
+            var Lkey = "234567890abcdefghijklmnopqr1";
+            var RKey = "bcdefghijklmnopqr1234567890a";
+            var st2 = _cryptionKey.GenerateSubKey(Lkey, RKey, 2);
+            var pt2 = _cryptionKey.PerformPC2("34567890abcdefghijklmnopqr12cdefghijklmnopqr1234567890ab");
+            Assert.AreEqual(pt2, st2);
+        }
+        [Test]
+        public void CheckThatKeysGetPermutated_3()
+        {
+            var Lkey = "34567890abcdefghijklmnopqr12";
+            var RKey = "cdefghijklmnopqr1234567890ab";
+            var st3 = _cryptionKey.GenerateSubKey(Lkey, RKey, 3);
+            var pt3 = _cryptionKey.PerformPC2("567890abcdefghijklmnopqr1234efghijklmnopqr1234567890abcd");
+            Assert.AreEqual(pt3, st3);
         }
     }
 }
