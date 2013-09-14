@@ -41,6 +41,7 @@
             this.txtCipherText = new System.Windows.Forms.TextBox();
             this.lbPlaintTextCount = new System.Windows.Forms.Label();
             this.lbCiptherTextCount = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnEncrypt
@@ -155,11 +156,21 @@
             this.lbCiptherTextCount.Size = new System.Drawing.Size(0, 13);
             this.lbCiptherTextCount.TabIndex = 12;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(49, 107);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(73, 13);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "Insert 8 letters";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(590, 532);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.lbCiptherTextCount);
             this.Controls.Add(this.lbPlaintTextCount);
             this.Controls.Add(this.txtCipherText);
@@ -195,6 +206,7 @@
         private System.Windows.Forms.TextBox txtCipherText;
         private System.Windows.Forms.Label lbPlaintTextCount;
         private System.Windows.Forms.Label lbCiptherTextCount;
+        private System.Windows.Forms.Label label5;
     }
 }
 

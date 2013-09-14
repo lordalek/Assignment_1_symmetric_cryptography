@@ -97,10 +97,10 @@ namespace Assigment_1_Tests
         [Test]
         public void testmanualecnrytAndDecryptasText()
         {
-            var manual = "1110001001101010111000100101011111000010111010001110111000001010";
+            var manual = "0010011010101000111010110000000111000100101000011101101100010000";
             var key = "12345678";
             var plain = "abcdfeqe";
-            Assert.AreEqual(_block.ConvertStringToBinaryString(plain), _logic.DecryptManual(manual, key));
+            Assert.AreEqual("0110000101100010011000110110010001100110011001010111000101100101", _logic.DecryptManual(manual, key));
         }
 
         [Test]

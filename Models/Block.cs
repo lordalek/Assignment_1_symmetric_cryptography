@@ -27,15 +27,15 @@ namespace Models
             if (inputBlock.Length <= BlockSize / 2)
             {
                 blocks = new string[1];
-                blocks[0] = inputBlock;
+                blocks[0] = inputBlock.PadLeft(32, '0');
             }
             else
             {
                 blocks = new string[2];
-                blocks[0] = inputBlock.Substring(0, BlockSize / 2);
+                blocks[0] = inputBlock.Substring(0, BlockSize / 2).PadLeft(BlockSize/2, '0');
                 blocks[1] = inputBlock.Substring(BlockSize / 2, inputBlock.Length - (BlockSize / 2));
                 //make sure block is 32 bits long.
-                blocks[1] = blocks[1].PadRight(BlockSize / 2, '0');
+                blocks[1] = blocks[1].PadLeft(BlockSize / 2, '0');
             }
             return blocks;
         }
