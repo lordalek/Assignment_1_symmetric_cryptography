@@ -1,4 +1,5 @@
-﻿using Assignment_1_symmetric_cryptography;
+﻿using System.Collections.Generic;
+using Assignment_1_symmetric_cryptography;
 using Models;
 using NUnit.Framework;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
@@ -10,12 +11,14 @@ namespace Assigment_1_Tests
     {
         private CryptionLogic _logic;
         private Block _block;
+        private CryptionKey _key;
 
         [SetUp]
         public void Init()
         {
             _logic = new CryptionLogic();
             _block = new Block();
+            _key = new CryptionKey();
         }
 
         [Test]
@@ -108,7 +111,47 @@ namespace Assigment_1_Tests
         {
             var key = "12345678";
             var plain = "abcdfeqe";
-            Assert.AreEqual(_block.ConvertStringToBinaryString(plain), _logic.DecryptManual(_logic.Encrypt(plain,key),  key));
+            Assert.AreEqual(_block.ConvertStringToBinaryString(plain), _logic.DecryptManual(_logic.Encrypt(plain, key), key));
         }
+
+        [Test]
+        public void CheckThatDecrpytedR16IsEncrpyt15()
+        {
+            var key = "12345678";
+            var plainText = "abcdfeqe";
+            var keyModel = new CryptionKey();
+            keyModel.SetKey(key, false);
+            var encryptedBin = _logic.EncryptManual(plainText, key);
+            var initialPermutated = _block.InitialPermutation(encryptedBin);
+            var splitBin = _block.SplitBlockIntoStrings(encryptedBin);
+            var round16Decrpyt = _logic.performFuncionFAndXorWithLeft(splitBin[0], splitBin[1], _block,
+                keyModel.GetKey(16));
+            //round16Decrpyt = _block.InverseInitialPermutation(splitBin[0] + round16Decrpyt);
+            var crypts = new List<string>();
+            crypts.Add(_block.ConvertStringToBinaryString(plainText));
+            for (int i = 1; i <= 16; i++)
+            {
+                var splits = _block.SplitBlockIntoStrings(crypts[i - 1]);
+                crypts.Add(splits[1] + _logic.performFuncionFAndXorWithLeft(splits[0], splits[1], _block, keyModel.GetKey(i)));
+            }
+            round16Decrpyt = splitBin[0] + round16Decrpyt;
+            Assert.AreEqual("0101111101100011010010110110100010110010101001011001010100110001", crypts[crypts.Count - 1]);
+            Assert.AreEqual(crypts[crypts.Count - 2], round16Decrpyt);
+        }
+
+        [Test]
+        public void CheckThatEncrpy17EqualsDecrpyt16()
+        {
+            var key = "12345678";
+            var plainText = "abcdfeqe";
+            var keyModel = new CryptionKey();
+            keyModel.SetKey(key, false);
+            var encryptedBin = _logic.EncryptManual(plainText, key);
+            var initialPermutated = _block.InitialPermutation(encryptedBin);
+            var splitBin = _block.SplitBlockIntoStrings(encryptedBin);
+            Assert.AreEqual("0101111101100011010010110110100010110010101001011001010100110001", splitBin[1] + splitBin[0]);
+        }
+
+
     }
 }

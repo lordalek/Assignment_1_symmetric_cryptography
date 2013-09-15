@@ -95,20 +95,19 @@ namespace Assignment_1_symmetric_cryptography
             var blockModel = new Block();
             keyModel.SetKey(key, false);
             var bin = blockModel.ConvertStringToBinaryString(plaintText);
-            var permutedBin = blockModel.InitialPermutation(bin);
-            var permutedbinBlocks = blockModel.SplitBlockIntoStrings(permutedBin);
+            //var permutedBin = blockModel.InitialPermutation(bin);
+            var permutedbinBlocks = blockModel.SplitBlockIntoStrings(bin);
             var leftSide = new string[17];
             leftSide[0] = permutedbinBlocks[0];
             var rightSide = new string[17];
             rightSide[0] = permutedbinBlocks[1];
             for (int i = 1; i <= 16; i++)
             {
-                var roundBin = blockModel.ExecuteFunctionF(rightSide[i - 1], keyModel.GetKey(i));
+                rightSide[i] = performFuncionFAndXorWithLeft(leftSide[i - 1], rightSide[i - 1], blockModel, keyModel.GetKey(i));
                 leftSide[i] = rightSide[i - 1];
-                rightSide[i] = blockModel.XORTwoBinaryStrings(roundBin, leftSide[i - 1]);
             }
             var cipherText = blockModel.InverseInitialPermutation(rightSide[16] + leftSide[16]);
-            return cipherText;
+            return rightSide[16] + leftSide[16];
         }
 
         public string DecryptManual(string ciper, string key)
@@ -117,20 +116,26 @@ namespace Assignment_1_symmetric_cryptography
             var blockModel = new Block();
             keyModel.SetKey(key, false);
             var bin = ciper;
-            var permutedBin = blockModel.InitialPermutation(bin);
-            var permutedbinBlocks = blockModel.SplitBlockIntoStrings(permutedBin);
+            //var permutedBin = blockModel.InitialPermutation(bin);
+            var permutedbinBlocks = blockModel.SplitBlockIntoStrings(bin);
             var leftSide = new string[17];
             leftSide[16] = permutedbinBlocks[0];
             var rightSide = new string[17];
             rightSide[16] = permutedbinBlocks[1];
             for (int i = 16; i >= 1; i--)
             {
-                var roundBin = blockModel.ExecuteFunctionF(rightSide[i], keyModel.GetKey(i));
+                rightSide[i - 1] = performFuncionFAndXorWithLeft(leftSide[i], rightSide[i], blockModel,
+                    keyModel.GetKey(i));
                 leftSide[i - 1] = rightSide[i];
-                rightSide[i - 1] = blockModel.XORTwoBinaryStrings(roundBin, leftSide[i]);
             }
             var cipherText = blockModel.InverseInitialPermutation(rightSide[0] + leftSide[0]);
-            return cipherText;
+            return rightSide[0] + leftSide[0];
+        }
+
+        public string performFuncionFAndXorWithLeft(string leftString, string rightString, Block block, string key)
+        {
+            var roundBin = block.ExecuteFunctionF(rightString, key);
+            return block.XORTwoBinaryStrings(roundBin, leftString);
         }
     }
 }
