@@ -156,7 +156,7 @@ namespace Assignment_1_symmetric_cryptography
             {
                 //rightSide[i] = blockModel.XORTwoBinaryStrings(rightSide[i - 1], blockModel.XORTwoBinaryStrings(i % 2 == 0 ? splittedKey[0] : splittedKey[1], leftSide[i - 1]));
                 //rightSide[i] = blockModel.XORTwoBinaryStrings(rightSide[i - 1], blockModel.XORTwoBinaryStrings(keyModel.Get32BitKey(i), leftSide[i - 1]));
-                rightSide[i] = blockModel.XORTwoBinaryStrings(leftSide[i - 1], functionF(rightSide[i - 1], keyModel.GetKey(i)));
+                rightSide[i] = blockModel.XORTwoBinaryStrings(leftSide[i - 1], FunctionF(rightSide[i - 1], keyModel.GetKey(i)));
                 leftSide[i] = rightSide[i - 1];
             }
             return rightSide[16] + leftSide[16];
@@ -179,14 +179,14 @@ namespace Assignment_1_symmetric_cryptography
             {
                 //rightSide[i - 1] = blockModel.XORTwoBinaryStrings(rightSide[i], blockModel.XORTwoBinaryStrings(i % 2 == 0 ? splittedKey[0] : splittedKey[1], leftSide[i]));
                 //rightSide[i - 1] = blockModel.XORTwoBinaryStrings(rightSide[i], blockModel.XORTwoBinaryStrings(keyModel.Get32BitKey(i), leftSide[i]));
-                rightSide[i - 1] = blockModel.XORTwoBinaryStrings(leftSide[i], functionF(rightSide[i], keyModel.GetKey(i)));
+                rightSide[i - 1] = blockModel.XORTwoBinaryStrings(leftSide[i], FunctionF(rightSide[i], keyModel.GetKey(i)));
                 leftSide[i - 1] = rightSide[i];
             }
             var cipherText = blockModel.InverseInitialPermutation(rightSide[0] + leftSide[0]);
             return rightSide[0] + leftSide[0];
         }
 
-        public string functionF(string dataBlock, string key)
+        public string FunctionF(string dataBlock, string key)
         {
             var block = new Block();
             dataBlock = block.Expand32BitTextInto48BitText(dataBlock);
