@@ -20,7 +20,7 @@ namespace Assignment_1_symmetric_cryptography
 
             _keyModel = new CryptionKey();
             _blockModel = new Block();
-            _keyModel.SetKey(key, false);
+            _keyModel.SetKey(key);
             var outBinaries = new StringBuilder();
 
             #endregion
@@ -87,7 +87,7 @@ namespace Assignment_1_symmetric_cryptography
 
             _keyModel = new CryptionKey();
             _blockModel = new Block();
-            _keyModel.SetKey(key, false);
+            _keyModel.SetKey(key);
             var outBinaries = new StringBuilder();
 
             #endregion
