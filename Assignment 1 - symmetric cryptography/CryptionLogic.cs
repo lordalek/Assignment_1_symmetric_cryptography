@@ -139,7 +139,8 @@ namespace Assignment_1_symmetric_cryptography
         {
             dataBlock = _blockModel.Expand32BitTextInto48BitText(dataBlock);
             dataBlock = _blockModel.XORTwoBinaryStrings(dataBlock, key);
-            return _blockModel.Substitute48BitTextInto32BitTextUsingSBox(dataBlock);
+            dataBlock = _blockModel.Substitute48BitTextInto32BitTextUsingSBox(dataBlock);
+            return _blockModel.Permutate32BitText(dataBlock);
         }
     }
 }

@@ -15,105 +15,6 @@ namespace Models
             get { return 64; }
         }
 
-        public string[] SplitBlockIntoStrings(string inputBlock)
-        {
-            if (string.IsNullOrEmpty(inputBlock))
-                throw new NullReferenceException("InputBlock is null or empty");
-
-            if (inputBlock.Length > BlockSize)
-                throw new Exception("inputBlock length is too long.");
-            //var binarys = ConvertStringToBinaryString(inputBlock);
-            string[] blocks;
-            if (inputBlock.Length <= BlockSize/2)
-            {
-                blocks = new string[1];
-                blocks[0] = inputBlock.PadLeft(32, '0');
-            }
-            else
-            {
-                blocks = new string[2];
-                blocks[0] = inputBlock.Substring(0, BlockSize/2).PadLeft(BlockSize/2, '0');
-                blocks[1] = inputBlock.Substring(BlockSize/2, inputBlock.Length - (BlockSize/2));
-                //make sure block is 32 bits long.
-                blocks[1] = blocks[1].PadLeft(BlockSize/2, '0');
-            }
-            return blocks;
-        }
-
-        public string ConvertSingleLetterToBinaryString(char inputChar)
-        {
-            string inputLetter = inputChar.ToString(CultureInfo.InvariantCulture);
-            if (string.IsNullOrEmpty(inputLetter))
-                throw new NullReferenceException("inputLetter is null or empty");
-            var byteArray = Encoding.UTF8.GetBytes(inputLetter);
-            byteArray = byteArray.Reverse().ToArray();
-            var sb = new StringBuilder();
-            foreach (var b in byteArray)
-            {
-                sb.Append(Convert.ToString(b, 2));
-            }
-            return sb.ToString().PadLeft(8, '0');
-        }
-
-        public string ConvertBinariesToText([NotNull] string binary)
-        {
-            if (binary == null) throw new ArgumentNullException("binary");
-            if (binary.Length < 8)
-                throw new Exception("Binary is too short");
-
-            var sb = new StringBuilder();
-            for (int i = 0; i < binary.Length; i += 8)
-            {
-                if (!binary.Substring(i, 8).Equals("00000000"))
-                    sb.Append(ConvertBinaryToLetter(binary.Substring(i, 8)));
-            }
-            return sb.ToString();
-        }
-
-        public string ConvertBinaryToLetter([NotNull] string binary)
-        {
-            if (binary == null) throw new ArgumentNullException("binary");
-            if (binary.Length != 8)
-                return "-1";
-            //var bytes = ConvertHexToByte(ConvertBinaryToHex(binary));
-            var bytes = ConvertBinaryToByte(binary);
-            var text = Encoding.UTF8.GetString(new[] {bytes});
-            var charLetter = (char) bytes;
-            return text;
-        }
-
-        public byte ConvertBinaryToByte(string binary)
-        {
-            var dec = Convert.ToInt32(binary, 2);
-            return Byte.Parse(dec.ToString());
-        }
-
-        public byte[] ConvertHexToByte(string hex)
-        {
-            int NumberChars = hex.Length;
-            var bytes = new byte[NumberChars/2];
-            for (int i = 0; i < NumberChars; i += 2)
-                bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
-            //byte but = (byte) "0x" + bytes[1] + bytes[0];
-            //byte but = (byte) bytes[1] + (byte) bytes[0];
-            var bytu = byte.Parse(hex[1].ToString() + hex[3].ToString());
-            var bytuu = new byte[] {byte.Parse(hex[1].ToString() + hex[3].ToString())};
-            return bytuu;
-        }
-
-        public string ConvertStringToBinaryString(string inputString)
-        {
-            if (string.IsNullOrEmpty(inputString))
-                throw new NullReferenceException("inputString is null or empty");
-
-            var sb = new StringBuilder();
-            foreach (char c in inputString)
-            {
-                sb.Append(ConvertSingleLetterToBinaryString(c));
-            }
-            return sb.ToString().PadLeft(BlockSize, '0');
-        }
-
         public string Expand32BitTextInto48BitText([NotNull] string TxtWith32BitSize)
         {
             if (TxtWith32BitSize == null) throw new ArgumentNullException("TxtWith32BitSize");
@@ -202,60 +103,109 @@ namespace Models
             return sb.ToString();
         }
 
-        public string InverseInitialPermutation([NotNull] string text64Bit)
+        #region Conversions
+
+        public string[] SplitBlockIntoStrings(string inputBlock)
         {
-            if (text64Bit == null) throw new ArgumentNullException("text64Bit");
-            var sb = new StringBuilder();
-            for (int i = 0; i < 8; i++)
+            if (string.IsNullOrEmpty(inputBlock))
+                throw new NullReferenceException("InputBlock is null or empty");
+
+            if (inputBlock.Length > BlockSize)
+                throw new Exception("inputBlock length is too long.");
+            //var binarys = ConvertStringToBinaryString(inputBlock);
+            string[] blocks;
+            if (inputBlock.Length <= BlockSize/2)
             {
-                for (int j = 0; j < 8; j++)
-                {
-                    var idx = InverseInitialPermutationTable[i, j];
-                    sb.Append(text64Bit[idx - 1]);
-                }
+                blocks = new string[1];
+                blocks[0] = inputBlock.PadLeft(32, '0');
+            }
+            else
+            {
+                blocks = new string[2];
+                blocks[0] = inputBlock.Substring(0, BlockSize/2).PadLeft(BlockSize/2, '0');
+                blocks[1] = inputBlock.Substring(BlockSize/2, inputBlock.Length - (BlockSize/2));
+                //make sure block is 32 bits long.
+                blocks[1] = blocks[1].PadLeft(BlockSize/2, '0');
+            }
+            return blocks;
+        }
+
+        public string ConvertSingleLetterToBinaryString(char inputChar)
+        {
+            string inputLetter = inputChar.ToString(CultureInfo.InvariantCulture);
+            if (string.IsNullOrEmpty(inputLetter))
+                throw new NullReferenceException("inputLetter is null or empty");
+            var byteArray = Encoding.UTF8.GetBytes(inputLetter);
+            byteArray = byteArray.Reverse().ToArray();
+            var sb = new StringBuilder();
+            foreach (var b in byteArray)
+            {
+                sb.Append(Convert.ToString(b, 2));
+            }
+            return sb.ToString().PadLeft(8, '0');
+        }
+
+        public string ConvertBinariesToText([NotNull] string binary)
+        {
+            if (binary == null) throw new ArgumentNullException("binary");
+            if (binary.Length < 8)
+                throw new Exception("Binary is too short");
+
+            var sb = new StringBuilder();
+            for (int i = 0; i < binary.Length; i += 8)
+            {
+                if (!binary.Substring(i, 8).Equals("00000000"))
+                    sb.Append(ConvertBinaryToLetter(binary.Substring(i, 8)));
             }
             return sb.ToString();
         }
 
-        public string ExecuteFunctionF([NotNull] string right32BitText,
-            [NotNull] string roundKey)
+        public string ConvertBinaryToLetter([NotNull] string binary)
         {
-            if (right32BitText == null) throw new ArgumentNullException("right32BitText");
-            if (roundKey == null) throw new ArgumentNullException("roundKey");
-            string processedText;
-            var rightSide = Expand32BitTextInto48BitText(right32BitText);
-            //Now 48 bit text string
-            var XORedInputAndKey = XORTwoBinaryStrings(rightSide, roundKey);
-            var SBoxed32BitBinary = Substitute48BitTextInto32BitTextUsingSBox(XORedInputAndKey);
-            var Permuted32BitBIn = Permutate32BitText(SBoxed32BitBinary);
-            processedText = Permuted32BitBIn;
-            return processedText;
+            if (binary == null) throw new ArgumentNullException("binary");
+            if (binary.Length != 8)
+                return "-1";
+            //var bytes = ConvertHexToByte(ConvertBinaryToHex(binary));
+            var bytes = ConvertBinaryToByte(binary);
+            var text = Encoding.UTF8.GetString(new[] {bytes});
+            var charLetter = (char) bytes;
+            return text;
         }
 
-        public readonly int[,] InitialPermutationTable =
+        public byte ConvertBinaryToByte(string binary)
         {
-            {58, 50, 42, 34, 26, 18, 10, 2},
-            {60, 52, 44, 36, 28, 20, 12, 4,},
-            {62, 54, 46, 38, 30, 22, 14, 6},
-            {64, 56, 48, 40, 32, 24, 16, 8},
-            {57, 49, 41, 33, 25, 17, 9, 1},
-            {59, 51, 43, 35, 27, 19, 11, 3},
-            {61, 53, 45, 37, 29, 21, 13, 5},
-            {63, 55, 47, 39, 31, 23, 15, 7}
-        };
+            var dec = Convert.ToInt32(binary, 2);
+            return Byte.Parse(dec.ToString());
+        }
 
-        public readonly int[,] InverseInitialPermutationTable =
+        public string ConvertStringToBinaryString(string inputString)
         {
-            {40, 8, 48, 16, 56, 24, 64, 32},
-            {39, 7, 47, 15, 55, 23, 63, 31},
-            {38, 6, 46, 14, 54, 22, 62, 30},
-            {37, 5, 45, 13, 53, 21, 61, 29},
-            {36, 4, 44, 12, 52, 20, 60, 28},
-            {35, 3, 43, 11, 51, 19, 59, 27},
-            {34, 2, 42, 10, 50, 18, 58, 26},
-            {33, 1, 41, 9, 49, 17, 57, 25}
-        };
+            if (string.IsNullOrEmpty(inputString))
+                throw new NullReferenceException("inputString is null or empty");
 
+            var sb = new StringBuilder();
+            foreach (char c in inputString)
+            {
+                sb.Append(ConvertSingleLetterToBinaryString(c));
+            }
+            return sb.ToString().PadLeft(BlockSize, '0');
+        }
+
+        public string ConvertBinaryToHex(string binary)
+        {
+            if (binary.Length != 8)
+                return "-1";
+            var sb = new StringBuilder();
+            sb.AppendFormat("{0:X2}", Convert.ToByte(binary.Substring(0, 4), 2));
+            sb.AppendFormat("{0:X2}", Convert.ToByte(binary.Substring(4, 4), 2));
+            return sb.ToString();
+        }
+
+        #endregion
+
+        #region Tables
+
+        //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
         public readonly int[,] ExpansionPermutationTable =
         {
             {32, 1, 2, 3, 4, 5},
@@ -268,6 +218,7 @@ namespace Models
             {28, 29, 30, 31, 32, 1}
         };
 
+        //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
         public readonly int[,] PermutationFunctionTable =
         {
             {16, 7, 20, 21, 29, 12, 28, 17},
@@ -276,6 +227,9 @@ namespace Models
             {19, 13, 30, 6, 22, 11, 4, 25}
         };
 
+        #region SBoxes
+
+        //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
         public readonly int[,] SBox1 =
         {
             {14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},
@@ -284,6 +238,7 @@ namespace Models
             {15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13}
         };
 
+        //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
         public readonly int[,] SBox2 =
         {
             {15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10},
@@ -292,6 +247,7 @@ namespace Models
             {13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9}
         };
 
+        //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
         public readonly int[,] SBox3 =
         {
             {10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8},
@@ -300,6 +256,7 @@ namespace Models
             {1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12}
         };
 
+        //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
         public readonly int[,] SBox4 =
         {
             {7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15},
@@ -308,6 +265,7 @@ namespace Models
             {3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14}
         };
 
+        //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
         public readonly int[,] SBox5 =
         {
             {2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9},
@@ -316,6 +274,7 @@ namespace Models
             {11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3}
         };
 
+        //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
         public readonly int[,] SBox6 =
         {
             {12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11},
@@ -324,6 +283,7 @@ namespace Models
             {4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13},
         };
 
+        //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
         public readonly int[,] SBox7 =
         {
             {4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1},
@@ -332,6 +292,7 @@ namespace Models
             {6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12},
         };
 
+        //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
         public readonly int[,] SBox8 =
         {
             {13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7},
@@ -340,14 +301,8 @@ namespace Models
             {2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11}
         };
 
-        public string ConvertBinaryToHex(string binary)
-        {
-            if (binary.Length != 8)
-                return "-1";
-            var sb = new StringBuilder();
-            sb.AppendFormat("{0:X2}", Convert.ToByte(binary.Substring(0, 4), 2));
-            sb.AppendFormat("{0:X2}", Convert.ToByte(binary.Substring(4, 4), 2));
-            return sb.ToString();
-        }
+        #endregion
+
+        #endregion
     }
 }
