@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Assignment_1_symmetric_cryptography;
+using Models;
 
 namespace GUI
 {
@@ -22,13 +23,14 @@ namespace GUI
         {
             try
             {
-                if (this.txtTextField.Text.Trim().Length != 8 || this.txtKeyField.Text.Trim().Length != 8)
-                    return;
-
+                var block = new Block();
                 var crpytionLogic = new CryptionLogic();
                 this.rTxtOutput.AppendText(DateTime.Now.ToLongTimeString() + " Encrypt: " + this.txtTextField.Text.Trim() + " Key: " + this.txtKeyField.Text.Trim());
                 this.rTxtOutput.AppendText(Environment.NewLine);
-                this.rTxtOutput.AppendText("Output: " + crpytionLogic.EncryptManual(this.txtTextField.Text.Trim(), this.txtKeyField.Text.Trim()));
+                var outPut = crpytionLogic.Encrpyt1(this.txtTextField.Text.Trim(), this.txtKeyField.Text.Trim());
+                this.rTxtOutput.AppendText("Output: " + block.ConvertBinariesToText(outPut));
+                this.rTxtOutput.AppendText(Environment.NewLine);
+                this.rTxtOutput.AppendText("Binary: " + (outPut));
                 this.rTxtOutput.AppendText(Environment.NewLine);
 
             }
@@ -43,13 +45,15 @@ namespace GUI
         {
             try
             {
-                if (this.txtCipherText.Text.Trim().Length != 64 || this.txtKeyField.Text.Trim().Length != 8)
-                    return;
+                var block = new Block();
 
                 var crpytionLogic = new CryptionLogic();
                 this.rTxtOutput.AppendText(DateTime.Now.ToLongTimeString() + " Decrypt: " + this.txtCipherText.Text.Trim() + " Key: " + this.txtKeyField.Text.Trim());
                 this.rTxtOutput.AppendText(Environment.NewLine);
-                this.rTxtOutput.AppendText("Output: " + crpytionLogic.DecryptManual(this.txtCipherText.Text.Trim(), this.txtKeyField.Text.Trim()));
+                var outPut = crpytionLogic.Decrpyt1(this.txtCipherText.Text.Trim(), this.txtKeyField.Text.Trim());
+                this.rTxtOutput.AppendText("Output: " + block.ConvertBinariesToText(outPut));
+                this.rTxtOutput.AppendText(Environment.NewLine);
+                this.rTxtOutput.AppendText("Binary: " + (outPut));
                 this.rTxtOutput.AppendText(Environment.NewLine);
             }
             catch (Exception ex)
@@ -63,7 +67,7 @@ namespace GUI
         {
             if (txtCipherText.Text.Trim().Length > 0)
                 lbCiptherTextCount.Text = txtCipherText.Text.Trim().Length.ToString();
-            }
+        }
 
         private void txtTextField_KeyUp(object sender, KeyEventArgs e)
         {

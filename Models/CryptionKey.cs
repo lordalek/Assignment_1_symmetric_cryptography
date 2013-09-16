@@ -32,11 +32,11 @@ namespace Models
         };
 
         //Taken from Cryptography and Network Security - Prins and Pract. 5th ed - W. Stallings (Pearson, 2011)
-        public readonly int[] ScheduledLeftShifts = {1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
+        public readonly int[] ScheduledLeftShifts = { 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 };
 
         private readonly string[] _subKeys = new string[16];
         private readonly string[] _shiftedKeysLeftSide = new string[16];
-        private readonly  string[] _shiftedKeysRightSide = new string[16];
+        private readonly string[] _shiftedKeysRightSide = new string[16];
 
         public int KeySize
         {
@@ -49,6 +49,34 @@ namespace Models
                 return "-1";
 
             return _subKeys[roundNumber - 1];
+        }
+
+        public void Set64Bitkey(string key)
+        {
+            if (key == null)
+                throw new Exception("Invalid key");
+            var block = new Block();
+            var keyAsBin = block.ConvertStringToBinaryString(key);
+            var splits = block.SplitBlockIntoStrings(keyAsBin);
+            for (int i = 0; i < 16; i++)
+            {
+                if (i <= 0)
+                {
+                    _shiftedKeysLeftSide[i] = ShiftUsingSB(splits[0], i + 1, false);
+                    _shiftedKeysRightSide[i] = ShiftUsingSB(splits[1], i + 1, false);
+                }
+                else
+                {
+                    _shiftedKeysLeftSide[i] = ShiftUsingSB(_shiftedKeysLeftSide[i - 1], i + 1, false);
+                    _shiftedKeysRightSide[i] = ShiftUsingSB(_shiftedKeysRightSide[i - 1], i + 1, false);
+                }
+            }
+        }
+
+        public string Get32BitKey(int roundNumber)
+        {
+            //return _shiftedKeysLeftSide[roundNumber - 1];
+            return roundNumber % 2 != 0 ? _shiftedKeysLeftSide[roundNumber - 1] : _shiftedKeysRightSide[_shiftedKeysRightSide.Length - roundNumber];
         }
 
         public void SetKey(string inputKey, bool isInverse)
@@ -68,11 +96,11 @@ namespace Models
                         _shiftedKeysLeftSide[round - 1] = ShiftUsingSB(keySplits[0], round, true);
                         _shiftedKeysRightSide[round - 1] = ShiftUsingSB(keySplits[1], round, true);
                         //binaryKey = GetSevenBitsInKey(binaryKey);
-                        GenerateKey(_shiftedKeysLeftSide[round - 1],_shiftedKeysRightSide[round - 1], true, round);
+                        GenerateKey(_shiftedKeysLeftSide[round - 1], _shiftedKeysRightSide[round - 1], true, round);
                     }
                     else
                     {
-                        GenerateKey(_shiftedKeysLeftSide[round - 2] , _shiftedKeysRightSide[round -2], true, round);
+                        GenerateKey(_shiftedKeysLeftSide[round - 2], _shiftedKeysRightSide[round - 2], true, round);
                     }
                 }
             }
@@ -87,7 +115,7 @@ namespace Models
                         string[] keySplits = SplitKey(binaryKey);
                         _shiftedKeysLeftSide[round - 1] = ShiftUsingSB(keySplits[0], round, false);
                         _shiftedKeysRightSide[round - 1] = ShiftUsingSB(keySplits[1], round, false);
-                        GenerateKey(_shiftedKeysLeftSide[round -1], _shiftedKeysRightSide[round -1], false, round);
+                        GenerateKey(_shiftedKeysLeftSide[round - 1], _shiftedKeysRightSide[round - 1], false, round);
                     }
                     else
                     {
@@ -188,8 +216,8 @@ namespace Models
             if (inputKey.Length < 48)
                 throw new Exception("Invalid input key length");
             var keySplits = new string[2];
-            keySplits[0] = inputKey.Substring(0, KeySize/2);
-            keySplits[1] = inputKey.Substring(KeySize/2, inputKey.Length - KeySize/2);
+            keySplits[0] = inputKey.Substring(0, KeySize / 2);
+            keySplits[1] = inputKey.Substring(KeySize / 2, inputKey.Length - KeySize / 2);
             return keySplits;
         }
 
@@ -203,7 +231,7 @@ namespace Models
         public string ShiftKey(string inputKey, int roundNumber, bool isInverse)
         {
             int shiftDistance = ScheduledLeftShifts[roundNumber];
-            var shiftedKey = new char[KeySize/2];
+            var shiftedKey = new char[KeySize / 2];
             if (isInverse)
             {
                 /**
@@ -217,7 +245,7 @@ namespace Models
                     for (int i = 0; i < inputKey.Length; i++)
                     {
                         if (i == 0)
-                            shiftedKey[KeySize/2 - shiftDistance] = inputKey[i];
+                            shiftedKey[KeySize / 2 - shiftDistance] = inputKey[i];
                         else
                         {
                             shiftedKey[i] = inputKey[i - shiftDistance];
@@ -233,9 +261,9 @@ namespace Models
                             shiftedKey[i] = inputKey[i - shiftDistance];
                         }
                         else if (i == 0)
-                            shiftedKey[KeySize/2 - shiftDistance] = shiftedKey[i];
+                            shiftedKey[KeySize / 2 - shiftDistance] = shiftedKey[i];
                         else if (i == 1)
-                            shiftedKey[KeySize/2 - shiftDistance/2] = shiftedKey[i];
+                            shiftedKey[KeySize / 2 - shiftDistance / 2] = shiftedKey[i];
                     }
                 }
             }
@@ -245,7 +273,7 @@ namespace Models
         public string ShiftUsingSB(string inputKey, int roundNumber, bool isInverse)
         {
             if (inputKey == null) throw new ArgumentNullException("inputKey");
-            int shiftDistance = ScheduledLeftShifts[roundNumber -1];
+            int shiftDistance = ScheduledLeftShifts[roundNumber - 1];
             var sb = new StringBuilder();
             if (isInverse)
             {

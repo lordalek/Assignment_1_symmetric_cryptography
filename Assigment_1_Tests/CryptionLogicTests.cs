@@ -152,6 +152,17 @@ namespace Assigment_1_Tests
             Assert.AreEqual("0101111101100011010010110110100010110010101001011001010100110001", splitBin[1] + splitBin[0]);
         }
 
+        [Test]
+        public void AssertThatEncrpyt1AndEncrypt1ReturnPlain()
+        {
+            var key = "12345678";
+            var plainText = "abcdfeqe";
+            var plaintAsBin = _block.ConvertStringToBinaryString(plainText);
+            var cipher = _logic.Encrpyt1(plainText, key);
+            //var decryptedBin = "1";
+            var decryptedBin = _logic.Decrpyt1(cipher, key);
+            Assert.AreEqual(plaintAsBin, decryptedBin);
+        }
 
     }
 }

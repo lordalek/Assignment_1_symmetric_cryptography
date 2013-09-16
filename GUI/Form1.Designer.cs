@@ -66,7 +66,7 @@
             // 
             this.rTxtOutput.Location = new System.Drawing.Point(47, 178);
             this.rTxtOutput.Name = "rTxtOutput";
-            this.rTxtOutput.Size = new System.Drawing.Size(414, 176);
+            this.rTxtOutput.Size = new System.Drawing.Size(531, 176);
             this.rTxtOutput.TabIndex = 2;
             this.rTxtOutput.Text = "";
             // 
