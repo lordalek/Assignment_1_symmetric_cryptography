@@ -27,7 +27,7 @@ namespace GUI
                 var crpytionLogic = new CryptionLogic();
                 this.rTxtOutput.AppendText(DateTime.Now.ToLongTimeString() + " Encrypt: " + this.txtTextField.Text.Trim() + " Key: " + this.txtKeyField.Text.Trim());
                 this.rTxtOutput.AppendText(Environment.NewLine);
-                var outPut = crpytionLogic.Encrpyt1(this.txtTextField.Text.Trim(), this.txtKeyField.Text.Trim());
+                var outPut = crpytionLogic.Encrypt(this.txtTextField.Text.Trim(), this.txtKeyField.Text.Trim());
                 this.rTxtOutput.AppendText("Output: " + block.ConvertBinariesToText(outPut));
                 this.rTxtOutput.AppendText(Environment.NewLine);
                 this.rTxtOutput.AppendText("Binary: " + (outPut));
@@ -50,7 +50,7 @@ namespace GUI
                 var crpytionLogic = new CryptionLogic();
                 this.rTxtOutput.AppendText(DateTime.Now.ToLongTimeString() + " Decrypt: " + this.txtCipherText.Text.Trim() + " Key: " + this.txtKeyField.Text.Trim());
                 this.rTxtOutput.AppendText(Environment.NewLine);
-                var outPut = crpytionLogic.Decrpyt1(this.txtCipherText.Text.Trim(), this.txtKeyField.Text.Trim());
+                var outPut = crpytionLogic.Decrypt(this.txtCipherText.Text.Trim(), this.txtKeyField.Text.Trim());
                 this.rTxtOutput.AppendText("Output: " + block.ConvertBinariesToText(outPut));
                 this.rTxtOutput.AppendText(Environment.NewLine);
                 this.rTxtOutput.AppendText("Binary: " + (outPut));

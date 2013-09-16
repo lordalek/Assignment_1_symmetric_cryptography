@@ -24,7 +24,7 @@ namespace Models
                 throw new Exception("inputBlock length is too long.");
             //var binarys = ConvertStringToBinaryString(inputBlock);
             string[] blocks;
-            if (inputBlock.Length <= BlockSize / 2)
+            if (inputBlock.Length <= BlockSize/2)
             {
                 blocks = new string[1];
                 blocks[0] = inputBlock.PadLeft(32, '0');
@@ -32,10 +32,10 @@ namespace Models
             else
             {
                 blocks = new string[2];
-                blocks[0] = inputBlock.Substring(0, BlockSize / 2).PadLeft(BlockSize / 2, '0');
-                blocks[1] = inputBlock.Substring(BlockSize / 2, inputBlock.Length - (BlockSize / 2));
+                blocks[0] = inputBlock.Substring(0, BlockSize/2).PadLeft(BlockSize/2, '0');
+                blocks[1] = inputBlock.Substring(BlockSize/2, inputBlock.Length - (BlockSize/2));
                 //make sure block is 32 bits long.
-                blocks[1] = blocks[1].PadLeft(BlockSize / 2, '0');
+                blocks[1] = blocks[1].PadLeft(BlockSize/2, '0');
             }
             return blocks;
         }
@@ -62,18 +62,11 @@ namespace Models
                 throw new Exception("Binary is too short");
 
             var sb = new StringBuilder();
-            sb.Append(ConvertBinaryToLetter(binary.Substring(0, 8)));
-            sb.Append(ConvertBinaryToLetter(binary.Substring(8, 8)));
-            sb.Append(ConvertBinaryToLetter(binary.Substring(16, 8)));
-            sb.Append(ConvertBinaryToLetter(binary.Substring(24, 8)));
-            sb.Append(ConvertBinaryToLetter(binary.Substring(32, 8)));
-            sb.Append(ConvertBinaryToLetter(binary.Substring(40, 8)));
-            sb.Append(ConvertBinaryToLetter(binary.Substring(48, 8)));
-            sb.Append(ConvertBinaryToLetter(binary.Substring(56, 8)));
-            //var bytes = BitConverter.GetBytes(Convert.ToInt64(binary, 2)).Reverse().ToArray();
-            //var test1 = Encoding.Unicode.GetString(bytes);
-            ////var test = Convert.ToBase64String(bytes);
-            //return Encoding.Unicode.GetString(hex);
+            for (int i = 0; i < binary.Length; i += 8)
+            {
+                if (!binary.Substring(i, 8).Equals("00000000"))
+                    sb.Append(ConvertBinaryToLetter(binary.Substring(i, 8)));
+            }
             return sb.ToString();
         }
 
@@ -84,8 +77,8 @@ namespace Models
                 return "-1";
             //var bytes = ConvertHexToByte(ConvertBinaryToHex(binary));
             var bytes = ConvertBinaryToByte(binary);
-            var text = Encoding.UTF8.GetString(new[] { bytes });
-            var charLetter = (char)bytes;
+            var text = Encoding.UTF8.GetString(new[] {bytes});
+            var charLetter = (char) bytes;
             return text;
         }
 
@@ -98,13 +91,13 @@ namespace Models
         public byte[] ConvertHexToByte(string hex)
         {
             int NumberChars = hex.Length;
-            var bytes = new byte[NumberChars / 2];
+            var bytes = new byte[NumberChars/2];
             for (int i = 0; i < NumberChars; i += 2)
-                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+                bytes[i/2] = Convert.ToByte(hex.Substring(i, 2), 16);
             //byte but = (byte) "0x" + bytes[1] + bytes[0];
             //byte but = (byte) bytes[1] + (byte) bytes[0];
             var bytu = byte.Parse(hex[1].ToString() + hex[3].ToString());
-            var bytuu = new byte[] { byte.Parse(hex[1].ToString() + hex[3].ToString()) };
+            var bytuu = new byte[] {byte.Parse(hex[1].ToString() + hex[3].ToString())};
             return bytuu;
         }
 
@@ -118,22 +111,7 @@ namespace Models
             {
                 sb.Append(ConvertSingleLetterToBinaryString(c));
             }
-            return sb.ToString().PadLeft(inputString.Length, '0');
-        }
-
-        public string InitialPermutation([NotNull] string inputText)
-        {
-            if (inputText == null) throw new ArgumentNullException("inputText");
-            var sb = new StringBuilder();
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    var idx = InitialPermutationTable[i, j];
-                    sb.Append(inputText[idx - 1]);
-                }
-            }
-            return sb.ToString();
+            return sb.ToString().PadLeft(BlockSize, '0');
         }
 
         public string Expand32BitTextInto48BitText([NotNull] string TxtWith32BitSize)
