@@ -143,6 +143,7 @@ namespace Assignment_1_symmetric_cryptography
             var keyModel = new CryptionKey();
             var blockModel = new Block();
             keyModel.Set64Bitkey(key);
+            keyModel.SetKey(key, false);
             var bin = blockModel.ConvertStringToBinaryString(plainText);
             //var permutedBin = blockModel.InitialPermutation(bin);
             var permutedbinBlocks = blockModel.SplitBlockIntoStrings(bin);
@@ -154,7 +155,8 @@ namespace Assignment_1_symmetric_cryptography
             for (int i = 1; i <= 16; i++)
             {
                 //rightSide[i] = blockModel.XORTwoBinaryStrings(rightSide[i - 1], blockModel.XORTwoBinaryStrings(i % 2 == 0 ? splittedKey[0] : splittedKey[1], leftSide[i - 1]));
-                rightSide[i] = blockModel.XORTwoBinaryStrings(rightSide[i - 1], blockModel.XORTwoBinaryStrings(keyModel.Get32BitKey(i), leftSide[i - 1]));
+                //rightSide[i] = blockModel.XORTwoBinaryStrings(rightSide[i - 1], blockModel.XORTwoBinaryStrings(keyModel.Get32BitKey(i), leftSide[i - 1]));
+                rightSide[i] = blockModel.XORTwoBinaryStrings(leftSide[i - 1], functionF(rightSide[i - 1], keyModel.GetKey(i)));
                 leftSide[i] = rightSide[i - 1];
             }
             return rightSide[16] + leftSide[16];
@@ -165,6 +167,7 @@ namespace Assignment_1_symmetric_cryptography
             var keyModel = new CryptionKey();
             var blockModel = new Block();
             keyModel.Set64Bitkey(key);
+            keyModel.SetKey(key, false);
             var bin = cipher;
             var permutedbinBlocks = blockModel.SplitBlockIntoStrings(bin);
             var splittedKey = blockModel.SplitBlockIntoStrings(blockModel.ConvertStringToBinaryString(key));
@@ -175,11 +178,20 @@ namespace Assignment_1_symmetric_cryptography
             for (int i = 16; i >= 1; i--)
             {
                 //rightSide[i - 1] = blockModel.XORTwoBinaryStrings(rightSide[i], blockModel.XORTwoBinaryStrings(i % 2 == 0 ? splittedKey[0] : splittedKey[1], leftSide[i]));
-                rightSide[i - 1] = blockModel.XORTwoBinaryStrings(rightSide[i], blockModel.XORTwoBinaryStrings(keyModel.Get32BitKey(i), leftSide[i]));
+                //rightSide[i - 1] = blockModel.XORTwoBinaryStrings(rightSide[i], blockModel.XORTwoBinaryStrings(keyModel.Get32BitKey(i), leftSide[i]));
+                rightSide[i - 1] = blockModel.XORTwoBinaryStrings(leftSide[i], functionF(rightSide[i], keyModel.GetKey(i)));
                 leftSide[i - 1] = rightSide[i];
             }
             var cipherText = blockModel.InverseInitialPermutation(rightSide[0] + leftSide[0]);
             return rightSide[0] + leftSide[0];
+        }
+
+        public string functionF(string dataBlock, string key)
+        {
+            var block = new Block();
+            dataBlock = block.Expand32BitTextInto48BitText(dataBlock);
+            dataBlock = block.XORTwoBinaryStrings(dataBlock, key);
+            return block.Substitute48BitTextInto32BitTextUsingSBox(dataBlock);
         }
     }
 }

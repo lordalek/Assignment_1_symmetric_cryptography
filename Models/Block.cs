@@ -32,7 +32,7 @@ namespace Models
             else
             {
                 blocks = new string[2];
-                blocks[0] = inputBlock.Substring(0, BlockSize / 2).PadLeft(BlockSize/2, '0');
+                blocks[0] = inputBlock.Substring(0, BlockSize / 2).PadLeft(BlockSize / 2, '0');
                 blocks[1] = inputBlock.Substring(BlockSize / 2, inputBlock.Length - (BlockSize / 2));
                 //make sure block is 32 bits long.
                 blocks[1] = blocks[1].PadLeft(BlockSize / 2, '0');
@@ -85,7 +85,7 @@ namespace Models
             //var bytes = ConvertHexToByte(ConvertBinaryToHex(binary));
             var bytes = ConvertBinaryToByte(binary);
             var text = Encoding.UTF8.GetString(new[] { bytes });
-            var charLetter = (char) bytes;
+            var charLetter = (char)bytes;
             return text;
         }
 
@@ -172,11 +172,17 @@ namespace Models
         {
             if (SBox == null) throw new ArgumentNullException("SBox");
             if (inputText == null) throw new ArgumentNullException("inputText");
-            var rowCounter = Convert.ToInt32(inputText[0].ToString() + inputText[inputText.Length - 1].ToString(), 2);
+            var sbCounter = new StringBuilder();
+            sbCounter.Append(inputText[0]);
+            sbCounter.Append(inputText[inputText.Length - 1]);
+            var rowCounter = Convert.ToInt32(sbCounter.ToString(), 2);
+            sbCounter.Clear();
+            sbCounter.Append(inputText[1]);
+            sbCounter.Append(inputText[2]);
+            sbCounter.Append(inputText[3]);
+            sbCounter.Append(inputText[4]);
             var columnCounter =
-                Convert.ToInt32(
-                    inputText[1].ToString() + inputText[2].ToString() + inputText[3].ToString() +
-                    inputText[4].ToString(), 2);
+                Convert.ToInt32(sbCounter.ToString(), 2);
             var sBoxValue = Convert.ToString(SBox[rowCounter, columnCounter], 2);
             return sBoxValue.PadLeft(4, '0');
         }
