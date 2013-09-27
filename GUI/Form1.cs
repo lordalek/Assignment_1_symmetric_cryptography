@@ -101,7 +101,7 @@ namespace GUI
 
         private void txtKeyField_KeyUp(object sender, KeyEventArgs e)
         {
-            if (txtKeyField.Text.Trim().Length > 0)
+            if (txtKeyField.Text.Trim().Length <= 8)
                 lb_keyCounter.Text = txtKeyField.Text.Trim().Length.ToString();
         }
 

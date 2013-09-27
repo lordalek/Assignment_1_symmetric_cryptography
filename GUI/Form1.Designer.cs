@@ -83,6 +83,7 @@
             // txtKeyField
             // 
             this.txtKeyField.Location = new System.Drawing.Point(56, 152);
+            this.txtKeyField.MaxLength = 8;
             this.txtKeyField.Name = "txtKeyField";
             this.txtKeyField.Size = new System.Drawing.Size(67, 20);
             this.txtKeyField.TabIndex = 4;
@@ -179,6 +180,8 @@
             // cbKey
             // 
             this.cbKey.AutoSize = true;
+            this.cbKey.Checked = true;
+            this.cbKey.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbKey.Location = new System.Drawing.Point(6, 19);
             this.cbKey.Name = "cbKey";
             this.cbKey.Size = new System.Drawing.Size(44, 17);
@@ -189,7 +192,9 @@
             // cbPlaintext
             // 
             this.cbPlaintext.AutoSize = true;
-            this.cbPlaintext.Location = new System.Drawing.Point(56, 19);
+            this.cbPlaintext.Checked = true;
+            this.cbPlaintext.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbPlaintext.Location = new System.Drawing.Point(58, 19);
             this.cbPlaintext.Name = "cbPlaintext";
             this.cbPlaintext.Size = new System.Drawing.Size(66, 17);
             this.cbPlaintext.TabIndex = 16;
@@ -199,6 +204,8 @@
             // cbCiphertext
             // 
             this.cbCiphertext.AutoSize = true;
+            this.cbCiphertext.Checked = true;
+            this.cbCiphertext.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbCiphertext.Location = new System.Drawing.Point(130, 19);
             this.cbCiphertext.Name = "cbCiphertext";
             this.cbCiphertext.Size = new System.Drawing.Size(73, 17);
@@ -209,14 +216,16 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.cbKey);
+            this.groupBox1.Controls.Add(this.btnLoad);
             this.groupBox1.Controls.Add(this.cbCiphertext);
+            this.groupBox1.Controls.Add(this.btnSave);
             this.groupBox1.Controls.Add(this.cbPlaintext);
-            this.groupBox1.Location = new System.Drawing.Point(63, 12);
+            this.groupBox1.Location = new System.Drawing.Point(63, 9);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(209, 47);
+            this.groupBox1.Size = new System.Drawing.Size(370, 47);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Data fields";
+            this.groupBox1.Text = "Data fields to save/load";
             // 
             // txtXMLPath
             // 
@@ -236,7 +245,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(516, 33);
+            this.btnSave.Location = new System.Drawing.Point(209, 18);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 21;
@@ -246,7 +255,7 @@
             // 
             // btnLoad
             // 
-            this.btnLoad.Location = new System.Drawing.Point(597, 33);
+            this.btnLoad.Location = new System.Drawing.Point(290, 18);
             this.btnLoad.Name = "btnLoad";
             this.btnLoad.Size = new System.Drawing.Size(75, 23);
             this.btnLoad.TabIndex = 22;
@@ -270,8 +279,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(725, 666);
             this.Controls.Add(this.btnOpenPath);
-            this.Controls.Add(this.btnLoad);
-            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtXMLPath);
             this.Controls.Add(this.groupBox1);
@@ -292,7 +299,7 @@
             this.MaximumSize = new System.Drawing.Size(741, 704);
             this.MinimumSize = new System.Drawing.Size(741, 704);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Assigment 1 - symmetric cryptography";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
